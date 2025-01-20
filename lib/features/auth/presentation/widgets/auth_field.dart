@@ -13,6 +13,7 @@ class AuthField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      controller: controller,
       decoration: InputDecoration(hintText: hintText),
       validator: (value) => value!.isEmpty ? "请输入$hintText!" : null,
       obscureText: isObscureText,

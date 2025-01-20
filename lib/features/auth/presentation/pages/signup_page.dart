@@ -1,8 +1,10 @@
 import 'package:belog/core/theme/app_pallete.dart';
+import 'package:belog/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:belog/features/auth/presentation/pages/login_page.dart';
 import 'package:belog/features/auth/presentation/widgets/auth_field.dart';
 import 'package:belog/features/auth/presentation/widgets/auth_gradient_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SignUpPage extends StatefulWidget {
   static route() => MaterialPageRoute(builder: (context) => const SignUpPage());
@@ -29,6 +31,7 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(),
         body: Padding(
             padding: const EdgeInsets.all(15),
             child: Form(
@@ -64,8 +67,12 @@ class _SignUpPageState extends State<SignUpPage> {
                     buttonText: '提交',
                     onPressed: () {
                       if (formKey.currentState!.validate()) {
-                        print('Validated');
+                        context.read<AuthBloc>().add(AuthSignUp(
+                            email: emailController.text.trim(),
+                            name: nameController.text.trim(),
+                            password: passwordController.text.trim()));
                       }
+                      print("'signed up:', ${emailController.text.trim()}");
                     },
                   ),
                   const SizedBox(height: 20),
@@ -82,8 +89,8 @@ class _SignUpPageState extends State<SignUpPage> {
                                 .textTheme
                                 .titleMedium!
                                 .copyWith(
-                                  color: AppPallete.gradient2,
-                                ),
+                                    color: AppPallete.gradient2,
+                                    fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
