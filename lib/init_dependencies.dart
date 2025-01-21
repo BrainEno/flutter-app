@@ -1,0 +1,32 @@
+import 'package:belog/core/secrets/app_secrets.dart';
+import 'package:belog/features/auth/data/datasources/auth_remote_data_source.dart';
+import 'package:belog/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:belog/features/auth/domain/repository/auth_repository.dart';
+import 'package:belog/features/auth/domain/usecases/user_sign_up.dart';
+import 'package:belog/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:get_it/get_it.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+final serviceLocator = GetIt.instance;
+
+Future<void> initDependencies() async {
+  await dotenv.load(fileName: ".env");
+  _initAuth();
+  final supabase = await Supabase.initialize(
+      url: AppSecrets.supabaseUrl, anonKey: AppSecrets.supabaseKey ?? '');
+  serviceLocator.registerLazySingleton(() => supabase.client);
+}
+
+void _initAuth() {
+  serviceLocator.registerFactory<AuthRemoteDataSource>(
+      () => AuthRemoteDataSourceImpl(serviceLocator<SupabaseClient>()));
+
+  serviceLocator.registerFactory<AuthRepository>(
+      () => AuthRepositoryImpl(serviceLocator()));
+
+  serviceLocator.registerFactory(() => UserSignUp(serviceLocator()));
+
+  serviceLocator
+      .registerLazySingleton(() => AuthBloc(userSignUp: serviceLocator()));
+}
