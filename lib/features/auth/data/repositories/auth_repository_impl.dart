@@ -1,8 +1,10 @@
 import 'package:belog/core/error/exceptions.dart';
 import 'package:belog/core/error/failures.dart';
 import 'package:belog/features/auth/data/datasources/auth_remote_data_source.dart';
+import 'package:belog/features/auth/domain/entities/user.dart';
 import 'package:belog/features/auth/domain/repository/auth_repository.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
@@ -10,25 +12,31 @@ class AuthRepositoryImpl implements AuthRepository {
   const AuthRepositoryImpl(this.remoteDataSource);
 
   @override
-  Future<Either<Failure, String>> loginWithEmailPassword(
-      {required String email, required String password}) {
-    // TODO: implement loginWithEmailPassword
-    throw UnimplementedError();
+  Future<Either<Failure, User>> loginWithEmailPassword(
+      {required String email, required String password}) async {
+    // implement loginWithEmailPassword
+    return _getUser(() async => await remoteDataSource.loginWithEmailPassword(
+        email: email, password: password));
   }
 
   @override
-  Future<Either<Failure, String>> signUpWithEmailPassword(
+  Future<Either<Failure, User>> signUpWithEmailPassword(
       {required String name,
       required String email,
       required String password}) async {
-    // TODO: implement signUpWithEmailPassword
-    try {
-      final userId = await remoteDataSource.signUpWithEmailPassword(
-          name: name, email: email, password: password);
+    //implement signUpWithEmailPassword
+    return _getUser(() async => await remoteDataSource.signUpWithEmailPassword(
+        name: name, email: email, password: password));
+  }
+}
 
-      return right(userId);
-    } on ServerException catch (e) {
-      return left(Failure(e.message));
-    }
+Future<Either<Failure, User>> _getUser(Future<User> Function() fn) async {
+  try {
+    final user = await fn();
+    return right(user);
+  } on sb.AuthException catch (e) {
+    return left(Failure(e.message));
+  } on ServerException catch (e) {
+    return left(Failure(e.message));
   }
 }
