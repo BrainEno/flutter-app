@@ -1,7 +1,7 @@
 import 'package:belog/core/error/exceptions.dart';
 import 'package:belog/core/error/failures.dart';
 import 'package:belog/features/auth/data/datasources/auth_remote_data_source.dart';
-import 'package:belog/features/auth/domain/entities/user.dart';
+import 'package:belog/core/common/entities/user.dart';
 import 'package:belog/features/auth/domain/repository/auth_repository.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;

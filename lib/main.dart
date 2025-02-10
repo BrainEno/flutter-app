@@ -1,3 +1,4 @@
+import 'package:belog/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:belog/core/theme/theme.dart';
 import 'package:belog/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:belog/features/auth/presentation/pages/login_page.dart';
@@ -10,7 +11,10 @@ void main() async {
 
   await initDependencies();
   runApp(MultiBlocProvider(
-    providers: [BlocProvider(create: (_) => serviceLocator<AuthBloc>())],
+    providers: [
+      BlocProvider(create: (_) => serviceLocator<AuthBloc>()),
+      BlocProvider(create: (_) => serviceLocator<AppUserCubit>())
+    ],
     child: const MyApp(),
   ));
 }
@@ -36,7 +40,21 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       title: 'Ferdydurke',
       theme: AppTheme.darkThemeMode,
-      home: const LoginPage(),
+      home: BlocSelector<AppUserCubit, AppUserState, bool>(
+        selector: (state) {
+          return state is AppUserLoggedIn;
+        },
+        builder: (context, isLoggedIn) {
+          if (isLoggedIn) {
+            return const Scaffold(
+              body: Center(
+                child: Text('Logged in'),
+              ),
+            );
+          }
+          return const LoginPage();
+        },
+      ),
     );
   }
 }

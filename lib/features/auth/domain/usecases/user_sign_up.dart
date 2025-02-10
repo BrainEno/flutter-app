@@ -1,6 +1,6 @@
 import 'package:belog/core/error/failures.dart';
 import 'package:belog/core/usecase/usecase.dart';
-import 'package:belog/features/auth/domain/entities/user.dart';
+import 'package:belog/core/common/entities/user.dart';
 import 'package:belog/features/auth/domain/repository/auth_repository.dart';
 import 'package:fpdart/fpdart.dart';
 
