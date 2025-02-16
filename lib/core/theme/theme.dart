@@ -10,6 +10,8 @@ class AppTheme {
       scaffoldBackgroundColor: AppPallete.backgroundColor,
       appBarTheme:
           const AppBarTheme(backgroundColor: AppPallete.backgroundColor),
+      chipTheme: ChipThemeData(
+          backgroundColor: AppPallete.backgroundColor, side: BorderSide.none),
       inputDecorationTheme: InputDecorationTheme(
         contentPadding: const EdgeInsets.all(27),
         enabledBorder: _border(),
