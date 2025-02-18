@@ -1,0 +1,58 @@
+import 'package:belog/features/blog/domain/entities/blog.dart';
+
+class BlogModel extends Blog {
+  BlogModel(
+      {required super.id,
+      required super.title,
+      required super.content,
+      required super.posterId,
+      required super.imageUrl,
+      required super.tags,
+      required super.updatedAt});
+
+  BlogModel copyWith({
+    String? id,
+    String? content,
+    String? posterId,
+    String? title,
+    String? imageUrl,
+    List<String>? tags,
+    DateTime? updatedAt,
+  }) {
+    return BlogModel(
+      id: id ?? this.id,
+      content: content ?? this.content,
+      posterId: posterId ?? this.posterId,
+      title: title ?? this.title,
+      imageUrl: imageUrl ?? this.imageUrl,
+      tags: tags ?? this.tags,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'id': id,
+      'title': title,
+      'content': content,
+      'poster_id': posterId,
+      'image_url': imageUrl,
+      'tags': tags,
+      'updated_at': updatedAt.toIso8601String(),
+    };
+  }
+
+  factory BlogModel.fromJson(Map<String, dynamic> map) {
+    return BlogModel(
+      id: map['id'] as String,
+      title: map['title'] as String,
+      content: map['content'] as String,
+      posterId: map['poster_id'] as String,
+      imageUrl: map['image_url'] as String,
+      tags: List<String>.from(map['tags'] ?? []),
+      updatedAt: map['updated_at'] == null
+          ? DateTime.now()
+          : DateTime.parse(map['updated_at'] as String),
+    );
+  }
+}

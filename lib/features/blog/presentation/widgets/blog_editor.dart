@@ -8,12 +8,18 @@ class BlogEditor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
       controller: controller,
       decoration: InputDecoration(
         hintText: hintText,
       ),
       maxLines: null,
+      validator: (value) {
+        if (value!.isEmpty) {
+          return '请输入$hintText';
+        }
+        return null;
+      },
     );
   }
 }
