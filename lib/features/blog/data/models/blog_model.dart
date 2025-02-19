@@ -1,4 +1,5 @@
 import 'package:belog/features/blog/domain/entities/blog.dart';
+import 'package:isar/isar.dart';
 
 class BlogModel extends Blog {
   BlogModel(
@@ -10,7 +11,8 @@ class BlogModel extends Blog {
       required super.tags,
       required super.updatedAt,
       super.posterName,
-      super.posterAvatar});
+      super.posterAvatar,
+      super.iid = Isar.autoIncrement});
 
   BlogModel copyWith({
     String? id,

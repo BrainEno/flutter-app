@@ -1,4 +1,10 @@
+import 'package:isar/isar.dart';
+
+part 'blog.g.dart';
+
+@Collection()
 class Blog {
+  final Id iid;
   final String id;
   final String title;
   final String content;
@@ -10,7 +16,8 @@ class Blog {
   final String? posterAvatar;
 
   Blog(
-      {required this.id,
+      {required this.iid,
+      required this.id,
       required this.title,
       required this.content,
       required this.posterId,
