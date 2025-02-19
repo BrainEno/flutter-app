@@ -8,7 +8,8 @@ class BlogModel extends Blog {
       required super.posterId,
       required super.imageUrl,
       required super.tags,
-      required super.updatedAt});
+      required super.updatedAt,
+      super.posterName});
 
   BlogModel copyWith({
     String? id,
@@ -18,6 +19,7 @@ class BlogModel extends Blog {
     String? imageUrl,
     List<String>? tags,
     DateTime? updatedAt,
+    String? posterName,
   }) {
     return BlogModel(
       id: id ?? this.id,
@@ -27,6 +29,7 @@ class BlogModel extends Blog {
       imageUrl: imageUrl ?? this.imageUrl,
       tags: tags ?? this.tags,
       updatedAt: updatedAt ?? this.updatedAt,
+      posterName: posterName ?? this.posterName,
     );
   }
 

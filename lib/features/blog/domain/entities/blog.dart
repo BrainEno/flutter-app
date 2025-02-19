@@ -6,6 +6,7 @@ class Blog {
   final String imageUrl;
   final List<String> tags;
   final DateTime updatedAt;
+  final String? posterName;
 
   Blog(
       {required this.id,
@@ -14,5 +15,6 @@ class Blog {
       required this.posterId,
       required this.imageUrl,
       required this.tags,
-      required this.updatedAt});
+      required this.updatedAt,
+      this.posterName});
 }

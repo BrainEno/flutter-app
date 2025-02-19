@@ -10,6 +10,7 @@ import 'package:belog/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:belog/features/blog/data/datasources/blog_remote_data_source.dart';
 import 'package:belog/features/blog/data/repositories/blog_repository_impl.dart';
 import 'package:belog/features/blog/domain/repositories/blog_repository.dart';
+import 'package:belog/features/blog/domain/usecase/get_all_blogs.dart';
 import 'package:belog/features/blog/domain/usecase/upload_blog.dart';
 import 'package:belog/features/blog/presentation/bloc/bloc/blog_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -61,7 +62,9 @@ void _initBlog() {
     ..registerFactory<BlogRepository>(
         () => BlogRepositoryImpl(serviceLocator()))
     // Usecases
-    ..registerFactory(() => UploadBlog(blogRepository: serviceLocator()))
+    ..registerFactory(() => UploadBlog(serviceLocator()))
+    ..registerFactory(() => GetAllBlogs(serviceLocator()))
     // Bloc
-    ..registerLazySingleton(() => BlogBloc(serviceLocator()));
+    ..registerLazySingleton(() =>
+        BlogBloc(uploadBlog: serviceLocator(), getAllBlogs: serviceLocator()));
 }

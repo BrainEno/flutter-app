@@ -8,6 +8,9 @@ abstract interface class BlogRemoteDataSource {
   Future<BlogModel> uploadBlog(BlogModel blog);
   Future<String> uploadBlogImage(
       {required File image, required BlogModel blog});
+
+  Future<List<BlogModel>> getAllBlogs();
+  Future<BlogModel> getBlogById(String id);
 }
 
 class BlogRemoteDataSourceImpl implements BlogRemoteDataSource {
@@ -34,5 +37,23 @@ class BlogRemoteDataSourceImpl implements BlogRemoteDataSource {
     } catch (e) {
       throw ServerException(e.toString());
     }
+  }
+
+  @override
+  Future<List<BlogModel>> getAllBlogs() async {
+    try {
+      final blogs =
+          await supabaseClient.from('blogs').select('*, profiles (name)');
+      return List<BlogModel>.from(blogs.map((blog) => BlogModel.fromJson(blog)
+          .copyWith(posterName: blog['profiles']['name']))).toList();
+    } catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<BlogModel> getBlogById(String id) {
+    // TODO: implement getBlogById
+    throw UnimplementedError();
   }
 }
