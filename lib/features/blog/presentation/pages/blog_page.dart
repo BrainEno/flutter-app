@@ -26,7 +26,7 @@ class _BlogPageState extends State<BlogPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Belog'),
+          title: const Text('Bottom Think'),
           actions: [
             IconButton(
               icon: const Icon(CupertinoIcons.add_circled),
@@ -48,6 +48,7 @@ class _BlogPageState extends State<BlogPage> {
             }
             if (state is BlogLoaded) {
               return ListView.builder(
+                  padding:EdgeInsets.only(bottom: 30),
                   itemCount: state.blogs.length,
                   itemBuilder: (context, index) {
                     final blog = state.blogs[index];

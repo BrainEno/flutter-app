@@ -44,16 +44,22 @@ class BlogCard extends StatelessWidget {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: blog.tags
-                          .map((e) => Chip(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 4, vertical: 2),
-                                label: Text(
-                                  e,
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 1.2),
+                          .map((e) => Row(
+
+                            children: [Chip(
+
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 4, vertical: 2),
+                                  label: Text(
+                                    e,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 1.2),
+                                  ),
                                 ),
-                              ))
+                                SizedBox(width:8)
+                            ]
+                          ))
                           .toList(),
                     )),
                 Column(
