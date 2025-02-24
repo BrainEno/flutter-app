@@ -14,6 +14,8 @@ class Blog {
   final DateTime updatedAt;
   final String? posterName;
   final String? posterAvatar;
+  @Index()
+  List<String> get titleWords => title.split(' ');
 
   Blog(
       {required this.iid,

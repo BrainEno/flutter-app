@@ -5,6 +5,7 @@ import 'package:belog/features/blog/domain/entities/blog.dart';
 abstract interface class BlogLocalDataSource {
   Future<void> uploadLocalBlogs({required List<BlogModel> blogs});
   Future<List<BlogModel>> loadBlogs();
+  Future<List<BlogModel>> searchLocalBlogs(String query);
 }
 
 class BlogLocalDataSourceImpl implements BlogLocalDataSource {
@@ -42,5 +43,26 @@ class BlogLocalDataSourceImpl implements BlogLocalDataSource {
     await isar.writeTxn(() async {
       blogCollection.putAll(blogs);
     });
+  }
+
+  @override
+  Future<List<BlogModel>> searchLocalBlogs(String query) async {
+    final blogs = await blogCollection
+        .buildQuery(
+            filter: FilterCondition.contains(
+                property: 'title', value: query, caseSensitive: false))
+        .findAll()
+        .then((value) => value
+            .map((e) => BlogModel(
+                id: e.id,
+                title: e.title,
+                content: e.content,
+                posterId: e.posterId,
+                imageUrl: e.imageUrl,
+                tags: e.tags,
+                updatedAt: e.updatedAt))
+            .toList());
+
+    return blogs;
   }
 }

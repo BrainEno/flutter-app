@@ -6,6 +6,7 @@ import 'package:belog/features/auth/data/repositories/auth_repository_impl.dart'
 import 'package:belog/features/auth/domain/repository/auth_repository.dart';
 import 'package:belog/features/auth/domain/usecases/current_user.dart';
 import 'package:belog/features/auth/domain/usecases/user_login.dart';
+import 'package:belog/features/auth/domain/usecases/user_sign_out.dart';
 import 'package:belog/features/auth/domain/usecases/user_sign_up.dart';
 import 'package:belog/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:belog/features/blog/data/datasources/blog_local_data_source.dart';
@@ -60,11 +61,13 @@ void _initAuth() {
     // Usecases
     ..registerFactory(() => UserSignUp(serviceLocator()))
     ..registerFactory(() => UserLogin(serviceLocator()))
+    ..registerFactory(() => UserSignOut(serviceLocator()))
     ..registerFactory(() => CurrentUser(serviceLocator()))
     // Bloc
     ..registerLazySingleton(() => AuthBloc(
           userSignUp: serviceLocator(),
           userLogin: serviceLocator(),
+          userSignOut: serviceLocator(),
           currentUser: serviceLocator(),
           appUserCubit: serviceLocator(),
         ));

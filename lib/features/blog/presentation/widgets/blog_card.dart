@@ -44,10 +44,8 @@ class BlogCard extends StatelessWidget {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: blog.tags
-                          .map((e) => Row(
-
-                            children: [Chip(
-
+                          .map((e) => Row(children: [
+                                Chip(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 4, vertical: 2),
                                   label: Text(
@@ -57,9 +55,8 @@ class BlogCard extends StatelessWidget {
                                         letterSpacing: 1.2),
                                   ),
                                 ),
-                                SizedBox(width:8)
-                            ]
-                          ))
+                                SizedBox(width: 8)
+                              ]))
                           .toList(),
                     )),
                 Column(
@@ -80,7 +77,7 @@ class BlogCard extends StatelessWidget {
                                   blurRadius: 4)
                             ])),
                     Text(
-                      blog.posterName!,
+                      blog.posterName != null ? blog.posterName! : "",
                       style: TextStyle(
                           letterSpacing: 0.2,
                           color: AppPallete.whiteColor,

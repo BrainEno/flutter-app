@@ -66,4 +66,82 @@ class BlogRepositoryImpl implements BlogRepository {
       return left(Failure(e.message));
     }
   }
+
+  @override
+  Future<Either<Failure, List<Blog>>> getBlogsByUser(String userId) async {
+    try {
+      if (!await (connectionChecker.isConnected)) {
+        return left(Failure('无法连接到网络'));
+      }
+      final blogs = await blogRemoteDataSource.getBlogsByPosterId(userId);
+      return right(blogs);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Blog>>> getBlogsByTag(String tag) async {
+    try {
+      if (!await (connectionChecker.isConnected)) {
+        return left(Failure('无法连接到网络'));
+      }
+      final blogs = await blogRemoteDataSource.getBlogsByTag(tag);
+      return right(blogs);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Blog>>> searchBlogs(String query) async {
+    try {
+      if (!await (connectionChecker.isConnected)) {
+        final blogs = await blogLocalDataSource.searchLocalBlogs(query);
+        return right(blogs);
+      }
+      final blogs = await blogRemoteDataSource.searchBlogs(query);
+      return right(blogs);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> deleteBlog(String blogId) async {
+    try {
+      if (!await (connectionChecker.isConnected)) {
+        return left(Failure('无法连接到网络'));
+      }
+      await blogRemoteDataSource.deleteBlog(blogId);
+      return right(true);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Blog>> editBlog(Blog blog, File? image) async {
+    try {
+      if (!await (connectionChecker.isConnected)) {
+        return left(Failure('无法连接到网络'));
+      }
+      BlogModel blogToUpdate = await blogRemoteDataSource.getBlogById(blog.id);
+
+      if (image != null) {
+        final imageUrl = await blogRemoteDataSource.uploadBlogImage(
+            image: image, blog: blogToUpdate);
+        blogToUpdate = blogToUpdate.copyWith(imageUrl: imageUrl);
+      }
+      final blogUpdated =
+          await blogRemoteDataSource.editBlog(blogToUpdate.copyWith(
+        title: blog.title,
+        content: blog.content,
+        tags: blog.tags,
+      ));
+      return right(blogUpdated);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
 }

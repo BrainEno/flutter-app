@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:belog/core/error/exceptions.dart';
 import 'package:belog/features/auth/data/models/user_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -15,7 +13,7 @@ abstract interface class AuthRemoteDataSource {
 
   Future<UserModel?> getCurrentUserData();
 
-  Future<String> uploadAvatar({required File image, required UserModel user});
+  Future<void> logout();
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -77,11 +75,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<String> uploadAvatar(
-      {required File image, required UserModel user}) async {
+  Future<void> logout() async {
     try {
-      await supabaseClient.storage.from('avatars').upload(user.id, image);
-      return supabaseClient.storage.from('avatars').getPublicUrl(user.id);
+      await supabaseClient.auth.signOut();
     } catch (e) {
       throw ServerException(e.toString());
     }

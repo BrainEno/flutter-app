@@ -14,4 +14,14 @@ abstract interface class BlogRepository {
   });
 
   Future<Either<Failure, List<Blog>>> getAllBlogs();
+
+  Future<Either<Failure, List<Blog>>> getBlogsByTag(String tag);
+
+  Future<Either<Failure, List<Blog>>> searchBlogs(String query);
+
+  Future<Either<Failure, List<Blog>>> getBlogsByUser(String userId);
+
+  Future<Either<Failure, Blog>> editBlog(Blog blog, File? image);
+
+  Future<Either<Failure, bool>> deleteBlog(String blogId);
 }
