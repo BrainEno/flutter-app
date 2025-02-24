@@ -1,6 +1,7 @@
 import 'package:belog/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:belog/core/utils/show_snackbar.dart';
 import 'package:belog/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:belog/features/auth/presentation/pages/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -31,40 +32,78 @@ class ProfilePage extends StatelessWidget {
           builder: (context, state) {
             if (state is AppUserLoggedIn) {
               return Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Column(
-                      children: [
-                        state.user.avartarUrl.isNotEmpty
-                            ? CircleAvatar(
-                                radius: 50,
-                                backgroundImage:
-                                    NetworkImage(state.user.avartarUrl),
-                              )
-                            : const CircleAvatar(child: Icon(Icons.person)),
-                        const SizedBox(height: 10),
-                        Text(state.user.name),
-                      ],
+                    CircleAvatar(
+                      radius: 60,
+                      backgroundImage: state.user.avartarUrl.isNotEmpty
+                          ? NetworkImage(state.user.avartarUrl)
+                          : null,
+                      child: state.user.avartarUrl.isEmpty
+                          ? Icon(Icons.person, size: 60)
+                          : null,
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 16),
+                    Text(
+                      state.user.name,
+                      style: const TextStyle(
+                          fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      state.user.email,
+                      style:
+                          TextStyle(fontSize: 16, color: Colors.grey.shade600),
+                    ),
+                    const SizedBox(height: 24),
+                    const Divider(),
                     Expanded(
                       child: ListView.builder(
                         itemCount: items.length,
                         itemBuilder: (context, index) {
                           final item = items[index];
+                          IconData icon;
+                          switch (index) {
+                            case 0:
+                              icon = Icons.edit;
+                              break;
+                            case 1:
+                              icon = Icons.article;
+                              break;
+                            case 2:
+                              icon = Icons.settings;
+                              break;
+                            case 3:
+                              icon = Icons.info;
+                              break;
+                            case 4:
+                              icon = Icons.logout;
+                              break;
+                            default:
+                              icon = Icons.help;
+                          }
                           return ListTile(
-                            title: Text(item),
+                            leading: Icon(icon, color: Colors.grey.shade700),
+                            title: Text(
+                              item,
+                              style: const TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w500),
+                            ),
                             onTap: () {
                               switch (index) {
                                 case 0:
+                                  // Navigate to edit profile
                                   break;
                                 case 1:
+                                  // Navigate to my articles
                                   break;
                                 case 2:
+                                  // Navigate to account settings
                                   break;
                                 case 3:
+                                  // Show about us
                                   break;
                                 case 4:
                                   _onLogoutClick(context);
@@ -79,7 +118,25 @@ class ProfilePage extends StatelessWidget {
                 ),
               );
             } else {
-              return const Center(child: Text('请先登录'));
+              return Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '您还没有登录',
+                      style:
+                          TextStyle(fontSize: 18, color: Colors.grey.shade600),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(context, LoginPage.route());
+                      },
+                      child: const Text('登录'),
+                    ),
+                  ],
+                ),
+              );
             }
           },
         ),

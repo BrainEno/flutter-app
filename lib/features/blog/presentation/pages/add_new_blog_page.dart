@@ -61,14 +61,42 @@ class _AddNewBlogPageState extends State<AddNewBlogPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
+      backgroundColor:
+          isDarkMode ? AppPallete.blackColor : AppPallete.lightBackground,
       appBar: AppBar(
+        backgroundColor:
+            isDarkMode ? AppPallete.blackColor : AppPallete.lightBackground,
+        elevation: 0,
+        iconTheme: IconThemeData(
+            color: isDarkMode ? AppPallete.whiteColor : AppPallete.lightBlack),
+        title: Text(
+          '撰写新文章', // "Write new article" in Chinese
+          style: TextStyle(
+            color: isDarkMode ? AppPallete.whiteColor : AppPallete.lightBlack,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true, // Center the title for Medium-like style
         actions: [
-          IconButton(
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: TextButton(
               onPressed: () {
                 uploadBlog();
               },
-              icon: const Icon(Icons.done_rounded))
+              style: TextButton.styleFrom(
+                foregroundColor:
+                    isDarkMode ? AppPallete.whiteColor : AppPallete.lightBlack,
+                textStyle: Theme.of(context)
+                    .textTheme
+                    .labelLarge
+                    ?.copyWith(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              child: const Text('发布'),
+            ),
+          ),
         ],
       ),
       body: BlocConsumer<BlogBloc, BlogState>(
@@ -87,96 +115,161 @@ class _AddNewBlogPageState extends State<AddNewBlogPage> {
           }
           return SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 24.0,
+                  vertical:
+                      20.0), // Adjusted horizontal padding, consistent vertical
               child: Form(
                 key: formKey,
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    image != null
-                        ? GestureDetector(
-                            onTap: () {
-                              selectImage();
-                            },
-                            child: SizedBox(
-                                height: 150,
-                                width: double.infinity,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
+                    GestureDetector(
+                      onTap: () {
+                        selectImage();
+                      },
+                      child: image != null
+                          ? SizedBox(
+                              height:
+                                  250, // Increased image height for better visual impact
+                              width: double.infinity,
+                              child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(
+                                      12), // Slightly more rounded image corners
                                   child: Image.file(
                                     image!,
                                     fit: BoxFit.cover,
-                                  ),
-                                )),
-                          )
-                        : GestureDetector(
-                            onTap: () {
-                              selectImage();
-                            },
-                            child: DottedBorder(
-                                color: AppPallete.borderColor,
-                                radius: const Radius.circular(10),
-                                borderType: BorderType.RRect,
-                                dashPattern: const [10, 4],
-                                strokeCap: StrokeCap.round,
-                                child: SizedBox(
-                                  height: 150,
-                                  width: double.infinity,
-                                  child: const Column(
+                                  )),
+                            )
+                          : DottedBorder(
+                              color: isDarkMode
+                                  ? AppPallete.greyColorLight
+                                      .withAlpha((0.6 * 255).toInt())
+                                  : AppPallete.lightBorder.withAlpha((0.8 * 255)
+                                      .toInt()), // More subtle dotted border
+                              radius: const Radius.circular(
+                                  12), // More rounded dotted border corners
+                              borderType: BorderType.RRect,
+                              dashPattern: const [6, 3], // Finer dash pattern
+                              strokeCap: StrokeCap.round,
+                              child: Container(
+                                height: 250, // Increased height of dotted area
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: isDarkMode
+                                      ? AppPallete.blackColorLight
+                                          .withAlpha((0.3 * 255).toInt())
+                                      : AppPallete.lightGrey.withAlpha((0.15 *
+                                              255)
+                                          .toInt()), // Even more subtle background for dotted area
+                                ),
+                                child: Center(
+                                  // Center content within dotted border using Center widget
+                                  child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Icon(
-                                        Icons.image,
-                                        size: 40,
+                                        Icons.image_outlined,
+                                        size: 55, // Slightly larger icon
+                                        color: isDarkMode
+                                            ? AppPallete.greyColor
+                                            : AppPallete.lightGreyText,
                                       ),
-                                      SizedBox(
-                                        height: 15,
-                                      ),
+                                      const SizedBox(height: 12),
                                       Text(
-                                        '上传封面',
+                                        '点击上传封面', // "Click to upload cover" - more interactive text
                                         style: TextStyle(
-                                            fontSize: 15,
-                                            color: AppPallete.whiteColor),
+                                            fontSize:
+                                                17, // Slightly larger upload text
+                                            fontWeight: FontWeight
+                                                .w500, // Medium font weight for upload text
+                                            color: isDarkMode
+                                                ? AppPallete.greyColor
+                                                : AppPallete.lightGreyText),
                                       )
                                     ],
                                   ),
-                                )),
-                          ),
-                    const SizedBox(height: 20),
-                    SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: ["诗歌", "小说", "戏剧", "其他"]
-                              .map((e) => Padding(
-                                    padding: const EdgeInsets.all(5.0),
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        if (selectedTags.contains(e)) {
-                                          selectedTags.remove(e);
-                                        } else {
-                                          selectedTags.add(e);
-                                        }
-
-                                        setState(() {});
-                                      },
-                                      child: Chip(
-                                        label: Text(e),
+                                ),
+                              )),
+                    ),
+                    const SizedBox(
+                        height: 36), // Increased spacing below image area
+                    Wrap(
+                      spacing: 10.0, // Slightly increased spacing between chips
+                      runSpacing: 10.0, // Slightly increased row spacing
+                      children: ["诗歌", "小说", "原创", "其他"]
+                          .map((e) => InputChip(
+                                label: Text(e,
+                                    style: TextStyle(
+                                        fontSize:
+                                            15, // Slightly reduced tag font size
+                                        fontWeight: FontWeight
+                                            .w500, // Medium font weight for tags
                                         color: selectedTags.contains(e)
-                                            ? const WidgetStatePropertyAll(
-                                                AppPallete.gradient2)
-                                            : null,
-                                        side: selectedTags.contains(e)
-                                            ? null
-                                            : const BorderSide(
-                                                color: AppPallete.borderColor),
-                                      ),
+                                            ? AppPallete.whiteColor
+                                            : isDarkMode
+                                                ? AppPallete.whiteColor
+                                                : AppPallete.lightBlack)),
+                                selected: selectedTags.contains(e),
+                                elevation: 0,
+                                showCheckmark: false,
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 8.0,
+                                    horizontal: 12.0), // Adjusted chip padding
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      25), // More rounded tag chips (pill-shaped)
+                                  side: BorderSide(
+                                      color: isDarkMode
+                                          ? AppPallete.greyColorLight
+                                              .withAlpha((0.7 * 255).toInt())
+                                          : AppPallete.lightBorder.withAlpha((0.7 *
+                                                  255)
+                                              .toInt())), // More subtle tag border
+                                ),
+                                backgroundColor: isDarkMode
+                                    ? AppPallete.blackColorLight
+                                        .withAlpha((0.6 * 255).toInt())
+                                    : AppPallete.lightGrey.withAlpha((0.4 * 255)
+                                        .toInt()), // More subtle tag background
+                                selectedColor: AppPallete.gradient1.withAlpha(
+                                    (0.9 * 255)
+                                        .toInt()), // Slightly less opaque selected tag gradient
+                                labelStyle: TextStyle(
+                                    fontWeight: FontWeight
+                                        .w500, // Medium font weight for tag labels
+                                    color: selectedTags.contains(e)
+                                        ? AppPallete.blackColor
+                                        : null // Selected tag label color
                                     ),
-                                  ))
-                              .toList(),
-                        )),
-                    const SizedBox(height: 10),
-                    BlogEditor(controller: titleControler, hintText: '标题'),
-                    const SizedBox(height: 20),
-                    BlogEditor(controller: contentControler, hintText: '内容')
+                                onSelected: (bool selected) {
+                                  setState(() {
+                                    if (selected) {
+                                      selectedTags.add(e);
+                                    } else {
+                                      selectedTags.remove(e);
+                                    }
+                                  });
+                                },
+                              ))
+                          .toList(),
+                    ),
+                    const SizedBox(height: 40), // Increased spacing below tags
+                    BlogEditor(
+                      controller: titleControler,
+                      hintText: '标题',
+                      contentType: BlogEditorContentType.title,
+                    ),
+                    const SizedBox(height: 30), // Increased spacing below title
+                    BlogEditor(
+                      controller: contentControler,
+                      hintText: '正文',
+                      maxLines: null,
+                      expands: true,
+                      contentType: BlogEditorContentType.body,
+                    ),
+                    const SizedBox(height: 60), // Increased bottom spacing
                   ],
                 ),
               ),

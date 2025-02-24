@@ -86,8 +86,6 @@ class _SignUpPageState extends State<SignUpPage> {
                                   name: nameController.text.trim(),
                                   password: passwordController.text.trim()));
                             }
-                            print(
-                                "'signed up:', ${emailController.text.trim()}");
                           },
                         ),
                         const SizedBox(height: 20),

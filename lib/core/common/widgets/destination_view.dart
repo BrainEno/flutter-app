@@ -2,7 +2,7 @@ import 'package:belog/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:belog/core/common/entities/destination.dart';
 import 'package:belog/features/auth/presentation/pages/login_page.dart';
 import 'package:belog/features/blog/presentation/pages/blog_page.dart';
-import 'package:belog/features/blog/presentation/pages/saved_blog_page.dart';
+import 'package:belog/features/blog/presentation/pages/saved_blogs_page.dart';
 import 'package:belog/features/blog/presentation/pages/search_blog_page.dart';
 import 'package:belog/features/user/presentation/pages/profile_page.dart';
 import 'package:flutter/material.dart';
@@ -56,7 +56,7 @@ class _DestinationViewState extends State<DestinationView> {
                       return const SearchBlogPage();
                     case 2:
                       return isLoggedIn
-                          ? const SavedBlogPage()
+                          ? const SavedBlogsPage()
                           : LoginPage(destination: widget.destination);
                     case 3:
                       return isLoggedIn

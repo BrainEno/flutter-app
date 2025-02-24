@@ -33,46 +33,74 @@ class _SearchBlogPageState extends State<SearchBlogPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: TextField(
-          controller: _searchController,
-          onChanged: _onSearchChanged,
-          decoration: InputDecoration(
-            hintText: '搜索...',
-            border: InputBorder.none,
-            hintStyle: TextStyle(color: AppPallete.whiteColor.withAlpha(70)),
+        title: Container(
+          decoration: BoxDecoration(
+            color: AppPallete.greyColor.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(20),
           ),
-          style: TextStyle(color: AppPallete.whiteColor),
-          autofocus: true,
-        ),
-        actions: [
-          if (_searchController.text.isNotEmpty)
-            IconButton(
-              icon: Icon(Icons.clear),
-              onPressed: () {
-                setState(() {
-                  _searchController.clear();
-                  _searchResults = [];
-                });
-              },
+          child: TextField(
+            controller: _searchController,
+            onChanged: _onSearchChanged,
+            decoration: InputDecoration(
+              hintText: '搜索',
+              border: InputBorder.none,
+              hintStyle: TextStyle(color: AppPallete.whiteColor.withAlpha(70)),
+              contentPadding: EdgeInsets.symmetric(horizontal: 16),
+              prefixIcon: Icon(Icons.search,
+                  color: AppPallete.whiteColor.withAlpha(70)),
+              suffixIcon: _searchController.text.isNotEmpty
+                  ? IconButton(
+                      icon: Icon(Icons.clear, color: AppPallete.whiteColor),
+                      onPressed: () {
+                        setState(() {
+                          _searchController.clear();
+                          _searchResults = [];
+                        });
+                      },
+                    )
+                  : null,
             ),
-        ],
+            style: TextStyle(color: AppPallete.whiteColor),
+            autofocus: true,
+          ),
+        ),
       ),
-      body: _searchResults.isEmpty
+      body: _searchController.text.isEmpty
           ? Center(
-              child: Text(
-                'Search for blogs...',
-                style: TextStyle(fontSize: 18, color: AppPallete.greyColor),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.search, size: 64, color: AppPallete.greyColor),
+                  SizedBox(height: 16),
+                  Text(
+                    '查找文章...',
+                    style: TextStyle(fontSize: 18, color: AppPallete.greyColor),
+                  ),
+                ],
               ),
             )
-          : ListView.builder(
-              itemCount: _searchResults.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(_searchResults[index]),
-                  // Add onTap or other actions as needed
-                );
-              },
-            ),
+          : _searchResults.isEmpty
+              ? Center(
+                  child: Text(
+                    'No results found',
+                    style: TextStyle(fontSize: 18, color: AppPallete.greyColor),
+                  ),
+                )
+              : ListView.separated(
+                  itemCount: _searchResults.length,
+                  separatorBuilder: (context, index) => Divider(),
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(
+                        _searchResults[index],
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      subtitle: Text('Subtitle for ${_searchResults[index]}'),
+                      leading: Icon(Icons.article),
+                    );
+                  },
+                ),
     );
   }
 }
