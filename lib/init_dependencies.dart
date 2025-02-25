@@ -15,6 +15,7 @@ import 'package:belog/features/blog/data/repositories/blog_repository_impl.dart'
 import 'package:belog/features/blog/domain/entities/blog.dart';
 import 'package:belog/features/blog/domain/repositories/blog_repository.dart';
 import 'package:belog/features/blog/domain/usecase/get_all_blogs.dart';
+import 'package:belog/features/blog/domain/usecase/search_blogs.dart';
 import 'package:belog/features/blog/domain/usecase/upload_blog.dart';
 import 'package:belog/features/blog/presentation/bloc/bloc/blog_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -91,9 +92,11 @@ Future<void> _initBlog() async {
     // Usecases
     ..registerFactory(() => UploadBlog(serviceLocator<BlogRepository>()))
     ..registerFactory(() => GetAllBlogs(serviceLocator<BlogRepository>()))
+    ..registerFactory(() => SearchBlogs(serviceLocator<BlogRepository>()))
     // Bloc
     ..registerLazySingleton(() => BlogBloc(
           uploadBlog: serviceLocator<UploadBlog>(),
           getAllBlogs: serviceLocator<GetAllBlogs>(),
+          searchBlogs: serviceLocator<SearchBlogs>(),
         ));
 }

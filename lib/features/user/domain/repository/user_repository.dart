@@ -7,3 +7,4 @@ import 'package:fpdart/fpdart.dart';
 abstract interface class UserRepository {
   Future<Either<Failure, User>> editUser(User user, File? avatar);
 }
+

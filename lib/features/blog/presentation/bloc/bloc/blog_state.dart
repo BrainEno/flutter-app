@@ -18,3 +18,15 @@ final class BlogLoaded extends BlogState {
   final List<Blog> blogs;
   BlogLoaded({required this.blogs});
 }
+
+final class BlogSearchSuccess extends BlogState {
+  final List<Blog> blogs;
+  BlogSearchSuccess({required this.blogs});
+}
+
+final class BlogSearchFailure extends BlogState {
+  final String error;
+  BlogSearchFailure({required this.error});
+}
+
+final class BlogSearchLoading extends BlogState {}

@@ -1,5 +1,10 @@
 import 'package:belog/core/theme/app_pallete.dart';
+import 'package:belog/core/utils/show_snackbar.dart';
+import 'package:belog/features/blog/domain/entities/blog.dart';
+import 'package:belog/features/blog/presentation/bloc/bloc/blog_bloc.dart';
+import 'package:belog/features/blog/presentation/pages/blog_viewer_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SearchBlogPage extends StatefulWidget {
   static route() => MaterialPageRoute(builder: (_) => const SearchBlogPage());
@@ -11,18 +16,15 @@ class SearchBlogPage extends StatefulWidget {
 
 class _SearchBlogPageState extends State<SearchBlogPage> {
   final TextEditingController _searchController = TextEditingController();
-  List<String> _searchResults = [];
+  List<Blog> _searchResults = [];
 
-  void _onSearchChanged(String query) {
+  void _onSearch(String query) {
     // Simulate search results (replace with your actual search logic)
     setState(() {
       if (query.isNotEmpty) {
-        _searchResults = [
-          'Result for "$query" 1',
-          'Result for "$query" 2',
-          'Another Result for "$query"',
-          'Related Result for "$query"',
-        ];
+        context.read<BlogBloc>().add(BlogSearchBlogs(
+              query: query,
+            ));
       } else {
         _searchResults = [];
       }
@@ -35,12 +37,12 @@ class _SearchBlogPageState extends State<SearchBlogPage> {
       appBar: AppBar(
         title: Container(
           decoration: BoxDecoration(
-            color: AppPallete.greyColor.withOpacity(0.2),
+            color: AppPallete.greyColor.withAlpha((0.2 * 255).toInt()),
             borderRadius: BorderRadius.circular(20),
           ),
           child: TextField(
             controller: _searchController,
-            onChanged: _onSearchChanged,
+            onSubmitted: _onSearch,
             decoration: InputDecoration(
               hintText: '搜索',
               border: InputBorder.none,
@@ -80,11 +82,25 @@ class _SearchBlogPageState extends State<SearchBlogPage> {
               ),
             )
           : _searchResults.isEmpty
-              ? Center(
-                  child: Text(
-                    'No results found',
-                    style: TextStyle(fontSize: 18, color: AppPallete.greyColor),
-                  ),
+              ? BlocConsumer<BlogBloc, BlogState>(
+                  listener: (context, state) {
+                    if (state is BlogSearchFailure) {
+                      showSnackBar(context, state.error);
+                    } else if (state is BlogSearchSuccess) {
+                      setState(() {
+                        _searchResults = state.blogs;
+                      });
+                    }
+                  },
+                  builder: (context, state) {
+                    return Center(
+                      child: Text(
+                        'No results found',
+                        style: TextStyle(
+                            fontSize: 18, color: AppPallete.greyColor),
+                      ),
+                    );
+                  },
                 )
               : ListView.separated(
                   itemCount: _searchResults.length,
@@ -92,12 +108,21 @@ class _SearchBlogPageState extends State<SearchBlogPage> {
                   itemBuilder: (context, index) {
                     return ListTile(
                       title: Text(
-                        _searchResults[index],
+                        _searchResults[index].title,
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 16),
                       ),
-                      subtitle: Text('Subtitle for ${_searchResults[index]}'),
+                      subtitle: Text('发布者：${_searchResults[index].posterName}'),
                       leading: Icon(Icons.article),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                BlogViewerPage(blog: _searchResults[index]),
+                          ),
+                        );
+                      },
                     );
                   },
                 ),

@@ -64,10 +64,10 @@ class _BlogCardState extends State<BlogCard>
           return Transform.scale(
             scale: _scaleAnimation.value,
             child: Container(
-              height: 240, // Increased height for better spacing
+              height: 210,
               margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(18), // Larger corners
+                borderRadius: BorderRadius.circular(8),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withAlpha(25),

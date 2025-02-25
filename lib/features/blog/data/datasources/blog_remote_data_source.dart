@@ -97,14 +97,36 @@ class BlogRemoteDataSourceImpl implements BlogRemoteDataSource {
   @override
   Future<List<BlogModel>> searchBlogs(String query) async {
     try {
-      final blogs = await supabaseClient
-          .from('blogs')
-          .select('*, profiles (name, avatar_url)')
-          .textSearch('title', query);
-      return List<BlogModel>.from(blogs.map((blog) => BlogModel.fromJson(blog)
-          .copyWith(
-              posterName: blog['profiles']['name'],
-              posterAvatar: blog['profiles']['avatar_url']))).toList();
+      // Clean and prepare the query
+      final sanitizedQuery = query.trim();
+      if (sanitizedQuery.isEmpty) {
+        return [];
+      }
+
+      // Detect if the query contains Chinese characters
+      final containsChinese =
+          RegExp(r'[\u4E00-\u9FFF]').hasMatch(sanitizedQuery);
+
+      final blogsQuery =
+          supabaseClient.from('blogs').select('*, profiles (name, avatar_url)');
+
+      final blogs = await (containsChinese
+          ? blogsQuery
+              // For Chinese: use ilike as primary search
+              .ilike('title', '%$sanitizedQuery%')
+              // Add text search as secondary (plain config for no stemming)
+              .textSearch('title', "'$sanitizedQuery':*", config: 'simple')
+          : blogsQuery
+              // For non-Chinese: use text search with English config
+              .textSearch('title', "'$sanitizedQuery':*", config: 'english')
+              .ilike('title', '%$sanitizedQuery%'));
+
+      return blogs
+          .map((blog) => BlogModel.fromJson(blog).copyWith(
+                posterName: blog['profiles']['name'],
+                posterAvatar: blog['profiles']['avatar_url'],
+              ))
+          .toList();
     } catch (e) {
       throw ServerException(e.toString());
     }

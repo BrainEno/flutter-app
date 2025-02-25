@@ -20,3 +20,9 @@ final class BlogUpload extends BlogEvent {
 }
 
 final class BlogFetchAllBlogs extends BlogEvent {}
+
+final class BlogSearchBlogs extends BlogEvent {
+  final String query;
+
+  BlogSearchBlogs({required this.query});
+}
