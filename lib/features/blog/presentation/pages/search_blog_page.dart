@@ -1,7 +1,7 @@
 import 'package:belog/core/theme/app_pallete.dart';
 import 'package:belog/core/utils/show_snackbar.dart';
 import 'package:belog/features/blog/domain/entities/blog.dart';
-import 'package:belog/features/blog/presentation/bloc/bloc/blog_bloc.dart';
+import 'package:belog/features/blog/presentation/bloc/listedBlogs/bloc/blog_bloc.dart';
 import 'package:belog/features/blog/presentation/pages/blog_viewer_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

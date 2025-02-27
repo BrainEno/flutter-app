@@ -60,8 +60,8 @@ class BlogEditor extends StatelessWidget {
                 fontWeight: hintFontWeight, // Dynamic hint font weight
                 fontFamily: 'Roboto',
                 color: isDarkMode
-                    ? AppPallete.greyColorLight.withOpacity(0.5)
-                    : AppPallete.lightGreyText.withOpacity(0.5),
+                    ? AppPallete.greyColorLight.withAlpha((0.5 * 255).toInt())
+                    : AppPallete.lightGreyText.withAlpha((0.5 * 255).toInt()),
               ),
           border: InputBorder.none,
           focusedBorder: InputBorder.none,

@@ -17,6 +17,9 @@ abstract interface class BlogRemoteDataSource {
   Future<List<BlogModel>> searchBlogs(String query);
   Future<BlogModel> editBlog(BlogModel blog);
   Future<void> deleteBlog(String blogId);
+  Future<List<BlogModel>> getUserLikedBlogs(String userId);
+  Future<bool> toggleLikeBlog(String userId, String blogId);
+  Future<bool> isBlogLikedByUser(String userId, String blogId);
 }
 
 class BlogRemoteDataSourceImpl implements BlogRemoteDataSource {
@@ -166,6 +169,72 @@ class BlogRemoteDataSourceImpl implements BlogRemoteDataSource {
           await supabaseClient.from('blogs').select().eq('id', blogId).single();
       return BlogModel.fromJson(blog);
     } catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<List<BlogModel>> getUserLikedBlogs(String userId) async {
+    try {
+      final likedBlogs = await retryOnConnectionClosed(() => supabaseClient
+          .from('likes')
+          .select('blog_id, blogs(*, profiles (name, avatar_url))')
+          .eq('user_id', userId));
+
+      return List<BlogModel>.from(likedBlogs.map((like) {
+        final blogData = like['blogs'] as Map<String, dynamic>;
+        return BlogModel.fromJson(blogData).copyWith(
+          posterName: blogData['profiles']['name'],
+          posterAvatar: blogData['profiles']['avatar_url'],
+        );
+      })).toList();
+    } catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<bool> toggleLikeBlog(String userId, String blogId) async {
+    try {
+      // Check if the like already exists
+      final existingLike = await isBlogLikedByUser(userId, blogId);
+
+      if (!existingLike) {
+        // Add like
+        await supabaseClient
+            .from('likes')
+            .insert({'user_id': userId, 'blog_id': blogId});
+      } else {
+        // Remove like
+        await supabaseClient
+            .from('likes')
+            .delete()
+            .eq('user_id', userId)
+            .eq('blog_id', blogId);
+      }
+      return true;
+    } catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<bool> isBlogLikedByUser(String userId, String blogId) async {
+    try {
+      final response = await supabaseClient
+          .from('likes')
+          .select()
+          .eq('user_id', userId)
+          .eq('blog_id', blogId)
+          .maybeSingle();
+
+      // Returns true if the like exists, false otherwise
+      return response != null;
+    } catch (e) {
+      if (e is PostgrestException && e.code == 'PGRST116') {
+        // 404-like error when no results found
+        return false;
+      }
       throw ServerException(e.toString());
     }
   }

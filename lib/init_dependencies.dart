@@ -15,9 +15,13 @@ import 'package:belog/features/blog/data/repositories/blog_repository_impl.dart'
 import 'package:belog/features/blog/domain/entities/blog.dart';
 import 'package:belog/features/blog/domain/repositories/blog_repository.dart';
 import 'package:belog/features/blog/domain/usecase/get_all_blogs.dart';
+import 'package:belog/features/blog/domain/usecase/get_user_liked_blogs.dart';
+import 'package:belog/features/blog/domain/usecase/is_blog_liked.dart';
 import 'package:belog/features/blog/domain/usecase/search_blogs.dart';
+import 'package:belog/features/blog/domain/usecase/toggle_like_blog.dart';
 import 'package:belog/features/blog/domain/usecase/upload_blog.dart';
-import 'package:belog/features/blog/presentation/bloc/bloc/blog_bloc.dart';
+import 'package:belog/features/blog/presentation/bloc/likedBlogs/bloc/blog_liked_bloc.dart';
+import 'package:belog/features/blog/presentation/bloc/listedBlogs/bloc/blog_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
@@ -93,10 +97,19 @@ Future<void> _initBlog() async {
     ..registerFactory(() => UploadBlog(serviceLocator<BlogRepository>()))
     ..registerFactory(() => GetAllBlogs(serviceLocator<BlogRepository>()))
     ..registerFactory(() => SearchBlogs(serviceLocator<BlogRepository>()))
+    ..registerFactory(() => ToggleLikeBlog(serviceLocator<BlogRepository>()))
+    ..registerFactory(() => IsBlogLiked(serviceLocator<BlogRepository>()))
+    ..registerFactory(() => GetUserLikedBlogs(serviceLocator<BlogRepository>()))
     // Bloc
-    ..registerLazySingleton(() => BlogBloc(
-          uploadBlog: serviceLocator<UploadBlog>(),
-          getAllBlogs: serviceLocator<GetAllBlogs>(),
-          searchBlogs: serviceLocator<SearchBlogs>(),
-        ));
+    ..registerLazySingleton(
+      () => BlogBloc(
+        uploadBlog: serviceLocator<UploadBlog>(),
+        getAllBlogs: serviceLocator<GetAllBlogs>(),
+        searchBlogs: serviceLocator<SearchBlogs>(),
+      ),
+    )
+    ..registerLazySingleton(() => BlogLikedBloc(
+        toggleBlogLike: serviceLocator<ToggleLikeBlog>(),
+        isBlogLiked: serviceLocator<IsBlogLiked>(),
+        getUserLikedBlogs: serviceLocator<GetUserLikedBlogs>()));
 }

@@ -1,7 +1,7 @@
 import 'package:belog/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:belog/core/common/widgets/loader.dart';
 import 'package:belog/core/utils/show_snackbar.dart';
-import 'package:belog/features/blog/presentation/bloc/bloc/blog_bloc.dart';
+import 'package:belog/features/blog/presentation/bloc/listedBlogs/bloc/blog_bloc.dart';
 import 'package:belog/features/blog/presentation/pages/add_new_blog_page.dart';
 import 'package:belog/features/blog/presentation/widgets/blog_card.dart';
 import 'package:flutter/cupertino.dart';
@@ -27,57 +27,80 @@ class _BlogPageState extends State<BlogPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Bottom Think'),
-        ),
-        body: BlocConsumer<BlogBloc, BlogState>(
-          listener: (context, state) {
-            if (state is BlogFailure) {
-              showSnackBar(context, state.error);
-            }
-          },
-          builder: (context, state) {
-            if (state is BlogLoading) {
-              return const Loader();
-            } else if (state is BlogLoaded) {
-              return RefreshIndicator(
-                onRefresh: () async {
-                  context.read<BlogBloc>().add(BlogFetchAllBlogs());
-                  await context
-                      .read<BlogBloc>()
-                      .stream
-                      .firstWhere((newState) => newState is! BlogLoading);
-                },
-                child: ListView.builder(
-                    padding: EdgeInsets.only(bottom: 30),
-                    itemCount: state.blogs.length,
-                    itemBuilder: (context, index) {
-                      final blog = state.blogs[index];
-                      return BlogCard(blog: blog);
-                    }),
+      appBar: AppBar(
+        title: const Text('Bottom Think'),
+      ),
+      body: BlocConsumer<BlogBloc, BlogState>(
+        listener: (context, state) {
+          if (state is BlogListFailure) {
+            showSnackBar(context, state.error);
+          }
+        },
+        builder: (context, state) {
+          if (state is BlogListLoading) {
+            // If we have a previous BlogLoaded state, show it with a loading overlay
+            if (state.previousState is BlogLoaded) {
+              final previousBlogs = (state.previousState as BlogLoaded).blogs;
+              return Stack(
+                children: [
+                  RefreshIndicator(
+                    onRefresh: _refreshBlogs,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.only(bottom: 30),
+                      itemCount: previousBlogs.length,
+                      itemBuilder: (context, index) {
+                        final blog = previousBlogs[index];
+                        return BlogCard(blog: blog);
+                      },
+                    ),
+                  ),
+                  const Center(child: Loader()),
+                ],
               );
-            } else if (state is BlogFailure) {
-              return Center(child: Text('Error: ${state.error}'));
             }
-            return const Center(
-              child: Text('暂时还没有文章...'),
+            return const Loader();
+          } else if (state is BlogLoaded) {
+            if (state.blogs.isEmpty) {
+              return const Center(child: Text('暂时还没有文章...'));
+            }
+            return RefreshIndicator(
+              onRefresh: _refreshBlogs,
+              child: ListView.builder(
+                padding: const EdgeInsets.only(bottom: 30),
+                itemCount: state.blogs.length,
+                itemBuilder: (context, index) {
+                  final blog = state.blogs[index];
+                  return BlogCard(blog: blog);
+                },
+              ),
             );
-          },
-        ),
-        floatingActionButton: BlocSelector<AppUserCubit, AppUserState, bool>(
-          selector: (state) {
-            return state is AppUserLoggedIn;
-          },
-          builder: (context, isLoggedIn) {
-            return isLoggedIn
-                ? FloatingActionButton(
-                    onPressed: () {
-                      Navigator.push(context, AddNewBlogPage.route());
-                    },
-                    child: const Icon(CupertinoIcons.add),
-                  )
-                : const SizedBox();
-          },
-        ));
+          } else if (state is BlogListFailure) {
+            return Center(child: Text('加载错误: ${state.error}'));
+          }
+          // Handle initial state explicitly
+          return const Center(child: Text('加载中，请稍候...'));
+        },
+      ),
+      floatingActionButton: BlocSelector<AppUserCubit, AppUserState, bool>(
+        selector: (state) => state is AppUserLoggedIn,
+        builder: (context, isLoggedIn) {
+          return isLoggedIn
+              ? FloatingActionButton(
+                  onPressed: () {
+                    Navigator.push(context, AddNewBlogPage.route());
+                  },
+                  child: const Icon(CupertinoIcons.add),
+                )
+              : const SizedBox();
+        },
+      ),
+    );
+  }
+
+  Future<void> _refreshBlogs() async {
+    context.read<BlogBloc>().add(BlogFetchAllBlogs());
+    await context.read<BlogBloc>().stream.firstWhere(
+          (newState) => newState is BlogLoaded || newState is BlogListFailure,
+        );
   }
 }

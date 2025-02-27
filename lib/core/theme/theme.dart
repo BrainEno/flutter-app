@@ -19,12 +19,10 @@ class AppTheme {
     colorScheme: const ColorScheme.dark(
       // Define color scheme for dark mode
       primary: AppPallete.greenColor,
-      secondary: AppPallete.greenColor, // Or a different accent if desired
-      background: AppPallete.blackColor,
+      secondary: AppPallete.greenColor,
       surface: AppPallete.blackColorLight, // For cards and surfaces
       onPrimary: AppPallete.whiteColor,
       onSecondary: AppPallete.whiteColor,
-      onBackground: AppPallete.whiteColor,
       onSurface: AppPallete.whiteColor,
     ),
     appBarTheme: const AppBarTheme(
@@ -108,11 +106,9 @@ class AppTheme {
       primary:
           AppPallete.gradient1, // Use gradient 1 as primary, adjust as needed
       secondary: AppPallete.gradient1,
-      background: AppPallete.lightBackground,
       surface: AppPallete.lightGrey, // Light grey for surfaces
       onPrimary: AppPallete.whiteColor, // White text on primary (gradient)
-      onSecondary: AppPallete.whiteColor,
-      onBackground: AppPallete.lightBlack, // Dark text on light background
+      onSecondary: AppPallete.whiteColor, // Dark text on light background
       onSurface: AppPallete.lightBlack,
     ),
     appBarTheme: const AppBarTheme(

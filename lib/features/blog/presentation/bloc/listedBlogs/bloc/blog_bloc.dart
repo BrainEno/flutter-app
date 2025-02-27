@@ -16,16 +16,16 @@ class BlogBloc extends Bloc<BlogEvent, BlogState> {
   final GetAllBlogs _getAllBlogs;
   final SearchBlogs _searchBlogs;
 
-  BlogBloc(
-      {required UploadBlog uploadBlog,
-      required GetAllBlogs getAllBlogs,
-      required SearchBlogs searchBlogs})
-      : _uploadBlog = uploadBlog,
+  BlogBloc({
+    required UploadBlog uploadBlog,
+    required GetAllBlogs getAllBlogs,
+    required SearchBlogs searchBlogs,
+  })  : _uploadBlog = uploadBlog,
         _getAllBlogs = getAllBlogs,
         _searchBlogs = searchBlogs,
         super(BlogInitial()) {
     on<BlogEvent>((event, emit) {
-      emit(BlogLoading());
+      emit(BlogListLoading());
     });
     on<BlogUpload>(_onBlogUpload);
     on<BlogFetchAllBlogs>(_onFetchAllBlogs);
@@ -42,22 +42,24 @@ class BlogBloc extends Bloc<BlogEvent, BlogState> {
     ));
 
     res.fold(
-      (failure) => emit(BlogFailure(error: failure.message)),
-      (blog) => emit(BlogSuccess()),
+      (failure) => emit(BlogUploadFailure(error: failure.message)),
+      (blog) => emit(BlogUploadSuccess()),
     );
   }
 
   void _onFetchAllBlogs(
       BlogFetchAllBlogs event, Emitter<BlogState> emit) async {
+    emit(BlogListLoading());
     final res = await _getAllBlogs(NoParams());
 
     res.fold(
-      (failure) => emit(BlogFailure(error: failure.message)),
+      (failure) => emit(BlogListFailure(error: failure.message)),
       (blogs) => emit(BlogLoaded(blogs: blogs)),
     );
   }
 
   void _onSearchBlogs(BlogSearchBlogs event, Emitter<BlogState> emit) async {
+    emit(BlogSearchLoading());
     final res = await _searchBlogs(SearchBlogsParams(query: event.query));
 
     res.fold(

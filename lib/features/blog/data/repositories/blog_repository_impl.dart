@@ -144,4 +144,41 @@ class BlogRepositoryImpl implements BlogRepository {
       return left(Failure(e.message));
     }
   }
+
+  @override
+  Future<Either<Failure, bool>> toggleLikeBlog(
+      String userId, String blogId) async {
+    try {
+      if (!await (connectionChecker.isConnected)) {
+        return right(false);
+      }
+
+      final res = await blogRemoteDataSource.toggleLikeBlog(userId, blogId);
+      return right(res);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> isBlogLiked(
+      String userId, String blogId) async {
+    try {
+      final res = await blogRemoteDataSource.isBlogLikedByUser(userId, blogId);
+      return right(res);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Blog>>> getUserLikedBlogs(String userId) async {
+    try {
+      final res = await blogRemoteDataSource.getUserLikedBlogs(userId);
+
+      return right(res);
+    } on ServerException catch (e) {
+      throw left(Failure(e.message));
+    }
+  }
 }

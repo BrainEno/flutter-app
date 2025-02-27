@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:belog/core/theme/app_pallete.dart';
-import 'package:belog/core/utils/calculate_reading_time.dart';
 import 'package:belog/features/blog/domain/entities/blog.dart';
 import 'package:belog/features/blog/presentation/pages/blog_viewer_page.dart';
 
@@ -9,7 +8,7 @@ class BlogCard extends StatefulWidget {
   const BlogCard({super.key, required this.blog});
 
   @override
-  _BlogCardState createState() => _BlogCardState();
+  State<BlogCard> createState() => _BlogCardState();
 }
 
 class _BlogCardState extends State<BlogCard>
@@ -131,54 +130,46 @@ class _BlogCardState extends State<BlogCard>
                               .toList(),
                         ),
                       ),
-                    const Spacer(), // Pushes content to the bottom
-
-                    // Title and Author Section
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.blog.title,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: AppPallete.whiteColor,
-                            fontSize: 26, // Larger title for emphasis
-                            fontWeight: FontWeight.bold,
-                            shadows: [
-                              Shadow(
-                                color: Colors.black87,
-                                offset: Offset(1, 1),
-                                blurRadius: 6,
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        if (widget.blog.posterName != null)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 4),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                           Text(
-                            widget.blog.posterName!,
+                            widget.blog.title,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
-                              color: Color.fromRGBO(255, 255, 255, 0.95),
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
+                              color: AppPallete.whiteColor,
+                              fontSize: 26, // Larger title for emphasis
+                              fontWeight: FontWeight.bold,
+                              shadows: [
+                                Shadow(
+                                  color: Colors.black87,
+                                  offset: Offset(1, 1),
+                                  blurRadius: 6,
+                                ),
+                              ],
                             ),
                           ),
-                      ],
+                          const SizedBox(height: 4),
+                          if (widget.blog.posterName != null)
+                            Text(
+                              widget.blog.posterName!,
+                              style: const TextStyle(
+                                color: Color.fromRGBO(255, 255, 255, 0.95),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 8),
-
                     // Metadata Section
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Text(
-                          calculateReadingTime(widget.blog.content),
-                          style: const TextStyle(
-                            color: Colors.white70,
-                            fontSize: 14,
-                          ),
-                        ),
                         Text(
                           widget.blog.updatedAt.toString().substring(0, 10),
                           style: const TextStyle(

@@ -24,4 +24,10 @@ abstract interface class BlogRepository {
   Future<Either<Failure, Blog>> editBlog(Blog blog, File? image);
 
   Future<Either<Failure, bool>> deleteBlog(String blogId);
+
+  Future<Either<Failure, bool>> toggleLikeBlog(String userId, String blogId);
+
+  Future<Either<Failure, bool>> isBlogLiked(String userId, String blogId);
+
+  Future<Either<Failure, List<Blog>>> getUserLikedBlogs(String userId);
 }
