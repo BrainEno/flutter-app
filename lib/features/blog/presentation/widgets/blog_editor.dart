@@ -46,6 +46,7 @@ class BlogEditor extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
       child: TextFormField(
         controller: controller,
+        autofocus: false,
         validator: (value) {
           if (value!.isEmpty) {
             return '请输入$hintText';

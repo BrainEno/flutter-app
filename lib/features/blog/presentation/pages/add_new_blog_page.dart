@@ -5,7 +5,7 @@ import 'package:belog/core/common/widgets/loader.dart';
 import 'package:belog/core/theme/app_pallete.dart';
 import 'package:belog/core/utils/pick_image.dart';
 import 'package:belog/core/utils/show_snackbar.dart';
-import 'package:belog/features/blog/presentation/bloc/listedBlogs/bloc/blog_bloc.dart';
+import 'package:belog/features/blog/presentation/blocs/bog_upload/bloc/blog_upload_bloc.dart';
 import 'package:belog/features/blog/presentation/pages/blog_page.dart';
 import 'package:belog/features/blog/presentation/widgets/blog_editor.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -43,7 +43,7 @@ class _AddNewBlogPageState extends State<AddNewBlogPage> {
         image != null) {
       final posterId =
           (context.read<AppUserCubit>().state as AppUserLoggedIn).user.id;
-      context.read<BlogBloc>().add(BlogUpload(
+      context.read<BlogUploadBloc>().add(UploadBlogEvent(
           image: image!,
           title: titleControler.text.trim(),
           content: contentControler.text.trim(),
@@ -99,7 +99,7 @@ class _AddNewBlogPageState extends State<AddNewBlogPage> {
           ),
         ],
       ),
-      body: BlocConsumer<BlogBloc, BlogState>(
+      body: BlocConsumer<BlogUploadBloc, BlogUploadState>(
         listener: (context, state) {
           if (state is BlogUploadFailure) {
             showSnackBar(context, state.error);

@@ -106,24 +106,15 @@ class BlogRemoteDataSourceImpl implements BlogRemoteDataSource {
         return [];
       }
 
-      // Detect if the query contains Chinese characters
-      final containsChinese =
-          RegExp(r'[\u4E00-\u9FFF]').hasMatch(sanitizedQuery);
-
+      // Set up the base query
       final blogsQuery =
           supabaseClient.from('blogs').select('*, profiles (name, avatar_url)');
 
-      final blogs = await (containsChinese
-          ? blogsQuery
-              // For Chinese: use ilike as primary search
-              .ilike('title', '%$sanitizedQuery%')
-              // Add text search as secondary (plain config for no stemming)
-              .textSearch('title', "'$sanitizedQuery':*", config: 'simple')
-          : blogsQuery
-              // For non-Chinese: use text search with English config
-              .textSearch('title', "'$sanitizedQuery':*", config: 'english')
-              .ilike('title', '%$sanitizedQuery%'));
+      // Search titles containing the query anywhere
+      final blogs =
+          await blogsQuery.filter('title', 'ilike', '%$sanitizedQuery%');
 
+      // Map the results to BlogModel
       return blogs
           .map((blog) => BlogModel.fromJson(blog).copyWith(
                 posterName: blog['profiles']['name'],

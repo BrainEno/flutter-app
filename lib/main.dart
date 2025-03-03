@@ -4,8 +4,10 @@ import 'package:belog/core/common/widgets/destination_view.dart';
 import 'package:belog/core/theme/app_pallete.dart';
 import 'package:belog/core/theme/theme.dart';
 import 'package:belog/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:belog/features/blog/presentation/bloc/likedBlogs/bloc/blog_liked_bloc.dart';
-import 'package:belog/features/blog/presentation/bloc/listedBlogs/bloc/blog_bloc.dart';
+import 'package:belog/features/blog/presentation/blocs/blog_liked/blog_liked_bloc.dart';
+import 'package:belog/features/blog/presentation/blocs/blog/blog_bloc.dart';
+import 'package:belog/features/blog/presentation/blocs/blog_search/bloc/blog_search_bloc.dart';
+import 'package:belog/features/blog/presentation/blocs/bog_upload/bloc/blog_upload_bloc.dart';
 import 'package:belog/init_dependencies.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,6 +22,8 @@ void main() async {
       BlocProvider(create: (_) => serviceLocator<AppUserCubit>()),
       BlocProvider(create: (_) => serviceLocator<BlogBloc>()),
       BlocProvider(create: (_) => serviceLocator<BlogLikedBloc>()),
+      BlocProvider(create: (_) => serviceLocator<BlogUploadBloc>()),
+      BlocProvider(create: (_) => serviceLocator<BlogSearchBloc>())
     ],
     child: const Home(),
   ));

@@ -3,7 +3,7 @@ import 'package:belog/core/theme/app_pallete.dart';
 import 'package:belog/core/utils/calculate_reading_time.dart';
 import 'package:belog/core/utils/show_snackbar.dart';
 import 'package:belog/features/blog/domain/entities/blog.dart';
-import 'package:belog/features/blog/presentation/bloc/likedBlogs/bloc/blog_liked_bloc.dart';
+import 'package:belog/features/blog/presentation/blocs/blog_liked/blog_liked_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -26,11 +26,15 @@ class _BlogViewerPageState extends State<BlogViewerPage> {
   }
 
   void _checkIfIsLiked() {
-    final userId =
-        (context.read<AppUserCubit>().state as AppUserLoggedIn).user.id;
-    context
-        .read<BlogLikedBloc>()
-        .add(GetIsBlogLiked(userId: userId, blogId: widget.blog.id));
+    final appUserState = context.read<AppUserCubit>().state;
+
+    if (appUserState is AppUserLoggedIn) {
+      final userId = appUserState.user.id;
+
+      context
+          .read<BlogLikedBloc>()
+          .add(GetIsBlogLiked(userId: userId, blogId: widget.blog.id));
+    }
   }
 
   @override
@@ -84,30 +88,28 @@ class _BlogViewerPageState extends State<BlogViewerPage> {
             actions: [
               BlocConsumer<BlogLikedBloc, BlogLikedState>(
                 listener: (context, state) {
-                  print('BlogViewerPage Listener: $state');
                   if (state is ToggleBlogLikeFailure) {
                     showSnackBar(context, state.error);
                   }
-                  // No need to dispatch GetIsBlogLiked here; the state already updates likedBlogs
                 },
                 builder: (context, state) {
-                  print('BlogViewerPage Builder: $state');
                   // Use likedBlogs map to determine if the blog is saved
                   bool isSaved = state.likedBlogs[widget.blog.id] ?? false;
                   return IconButton(
-                    icon: Icon(
-                      isSaved ? Icons.bookmark : Icons.bookmark_border,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      final userId = (context.read<AppUserCubit>().state
-                              as AppUserLoggedIn)
-                          .user
-                          .id;
-                      context.read<BlogLikedBloc>().add(ToggleBlogLike(
-                          userId: userId, blogId: widget.blog.id));
-                    },
-                  );
+                      icon: Icon(
+                        isSaved ? Icons.bookmark : Icons.bookmark_border,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        final appUserState = context.read<AppUserCubit>().state;
+                        if (appUserState is AppUserLoggedIn) {
+                          final userId = appUserState.user.id;
+                          context.read<BlogLikedBloc>().add(ToggleBlogLike(
+                              userId: userId, blogId: widget.blog.id));
+                        } else {
+                          showSnackBar(context, '请先登录账户');
+                        }
+                      });
                 },
               ),
             ],

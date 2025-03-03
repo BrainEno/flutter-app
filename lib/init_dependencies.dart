@@ -20,8 +20,10 @@ import 'package:belog/features/blog/domain/usecase/is_blog_liked.dart';
 import 'package:belog/features/blog/domain/usecase/search_blogs.dart';
 import 'package:belog/features/blog/domain/usecase/toggle_like_blog.dart';
 import 'package:belog/features/blog/domain/usecase/upload_blog.dart';
-import 'package:belog/features/blog/presentation/bloc/likedBlogs/bloc/blog_liked_bloc.dart';
-import 'package:belog/features/blog/presentation/bloc/listedBlogs/bloc/blog_bloc.dart';
+import 'package:belog/features/blog/presentation/blocs/blog_liked/blog_liked_bloc.dart';
+import 'package:belog/features/blog/presentation/blocs/blog/blog_bloc.dart';
+import 'package:belog/features/blog/presentation/blocs/blog_search/bloc/blog_search_bloc.dart';
+import 'package:belog/features/blog/presentation/blocs/bog_upload/bloc/blog_upload_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
@@ -102,12 +104,11 @@ Future<void> _initBlog() async {
     ..registerFactory(() => GetUserLikedBlogs(serviceLocator<BlogRepository>()))
     // Bloc
     ..registerLazySingleton(
-      () => BlogBloc(
-        uploadBlog: serviceLocator<UploadBlog>(),
-        getAllBlogs: serviceLocator<GetAllBlogs>(),
-        searchBlogs: serviceLocator<SearchBlogs>(),
-      ),
-    )
+        () => BlogBloc(getAllBlogs: serviceLocator<GetAllBlogs>()))
+    ..registerLazySingleton(
+        () => BlogUploadBloc(uploadBlog: serviceLocator<UploadBlog>()))
+    ..registerLazySingleton(
+        () => BlogSearchBloc(searchBlogs: serviceLocator<SearchBlogs>()))
     ..registerLazySingleton(() => BlogLikedBloc(
         toggleBlogLike: serviceLocator<ToggleLikeBlog>(),
         isBlogLiked: serviceLocator<IsBlogLiked>(),

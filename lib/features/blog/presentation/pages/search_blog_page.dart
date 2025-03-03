@@ -1,7 +1,7 @@
 import 'package:belog/core/theme/app_pallete.dart';
 import 'package:belog/core/utils/show_snackbar.dart';
 import 'package:belog/features/blog/domain/entities/blog.dart';
-import 'package:belog/features/blog/presentation/bloc/listedBlogs/bloc/blog_bloc.dart';
+import 'package:belog/features/blog/presentation/blocs/blog_search/bloc/blog_search_bloc.dart';
 import 'package:belog/features/blog/presentation/pages/blog_viewer_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,7 +22,7 @@ class _SearchBlogPageState extends State<SearchBlogPage> {
     // Simulate search results (replace with your actual search logic)
     setState(() {
       if (query.isNotEmpty) {
-        context.read<BlogBloc>().add(BlogSearchBlogs(
+        context.read<BlogSearchBloc>().add(SearchBlogsEvent(
               query: query,
             ));
       } else {
@@ -63,7 +63,7 @@ class _SearchBlogPageState extends State<SearchBlogPage> {
                   : null,
             ),
             style: TextStyle(color: AppPallete.whiteColor),
-            autofocus: true,
+            autofocus: false,
           ),
         ),
       ),
@@ -82,7 +82,7 @@ class _SearchBlogPageState extends State<SearchBlogPage> {
               ),
             )
           : _searchResults.isEmpty
-              ? BlocConsumer<BlogBloc, BlogState>(
+              ? BlocConsumer<BlogSearchBloc, BlogSearchState>(
                   listener: (context, state) {
                     if (state is BlogSearchFailure) {
                       showSnackBar(context, state.error);

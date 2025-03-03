@@ -27,6 +27,7 @@ class AuthField extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return TextFormField(
+      autofocus: false,
       controller: controller,
       obscureText: isObscureText,
       style: style ??

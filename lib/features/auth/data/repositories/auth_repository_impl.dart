@@ -21,7 +21,7 @@ class AuthRepositoryImpl implements AuthRepository {
         final session = remoteDataSource.currentUserSession;
 
         if (session == null) {
-          return left(Failure('请重新登录'));
+          return left(Failure('请登录账户'));
         }
 
         return right(UserModel(
@@ -29,7 +29,7 @@ class AuthRepositoryImpl implements AuthRepository {
       }
       final userModel = await remoteDataSource.getCurrentUserData();
       if (userModel == null) {
-        return left(Failure("User not logged in!"));
+        return left(Failure("请登录账户"));
       }
       return right(userModel);
     } on ServerException catch (e) {
