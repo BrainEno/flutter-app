@@ -15,7 +15,11 @@ jobs:
           channel: 'stable'
           architecture: x64
       - run: flutter pub get
-      
+
+      - name: Export environment variables
+        run: |
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
+          echo "SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}" >> $GITHUB_ENV
 
       - run: pod repo update
         working-directory: ios
