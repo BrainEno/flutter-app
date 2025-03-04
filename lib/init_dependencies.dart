@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:belog/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:belog/core/network/connection_checker.dart';
 import 'package:belog/core/secrets/app_secrets.dart';
@@ -38,12 +40,31 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 final serviceLocator = GetIt.instance;
 
 Future<void> initDependencies() async {
-  await dotenv.load(fileName: ".env");
+  // Load from .env (for local development)
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    print("Error loading .env file: $e");
+  }
+
+  // Override with GitHub Secrets (for CI/CD)
+  final supabaseUrl = Platform.environment['SUPABASE_URL'];
+  final supabaseKey = Platform.environment['SUPABASE_KEY'];
+
+  if (supabaseUrl != null && supabaseKey != null) {
+    AppSecrets.supabaseUrl = supabaseUrl;
+    AppSecrets.supabaseKey = supabaseKey;
+
+    print("Using GitHub Secrets for Supabase credentials.");
+  } else {
+    print("Using .env file for Supabase credentials.");
+  }
+
   _initAuth();
   await _initBlog();
 
   final supabase = await Supabase.initialize(
-      url: AppSecrets.supabaseUrl, anonKey: AppSecrets.supabaseKey ?? '');
+      url: AppSecrets.supabaseUrl ?? '', anonKey: AppSecrets.supabaseKey ?? '');
 
   final directory = await getApplicationDocumentsDirectory();
   final isarInstance = await Isar.open(
