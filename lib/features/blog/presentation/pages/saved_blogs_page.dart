@@ -60,8 +60,6 @@ class _SavedBlogsPageState extends State<SavedBlogsPage>
           }
         },
         builder: (context, state) {
-          print('SavedBlogsPage Builder: $state');
-
           if (state is UserLikedBlogsSuccess) {
             _lastBlogs = state.blogs;
           }

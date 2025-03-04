@@ -2,6 +2,7 @@ import 'package:belog/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:belog/core/utils/show_snackbar.dart';
 import 'package:belog/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:belog/features/auth/presentation/pages/login_page.dart';
+import 'package:belog/features/blog/presentation/pages/user_blogs_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -98,6 +99,8 @@ class ProfilePage extends StatelessWidget {
                                   break;
                                 case 1:
                                   // Navigate to my articles
+                                  Navigator.push(
+                                      context, UserBlogsPage.route());
                                   break;
                                 case 2:
                                   // Navigate to account settings

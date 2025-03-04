@@ -50,7 +50,11 @@ class BlogModel extends Blog {
     };
   }
 
-  factory BlogModel.fromJson(Map<String, dynamic> map) {
+  factory BlogModel.fromJson(Map<String, dynamic>? map) {
+    if (map == null) {
+      throw Exception('Invalid blog data: json is null');
+    }
+
     return BlogModel(
       id: map['id'] as String,
       title: map['title'] as String,

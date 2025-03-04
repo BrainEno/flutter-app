@@ -113,32 +113,42 @@ class BlogRepositoryImpl implements BlogRepository {
       if (!await (connectionChecker.isConnected)) {
         return left(Failure('无法连接到网络'));
       }
-      await blogRemoteDataSource.deleteBlog(blogId);
-      return right(true);
+      final res = await blogRemoteDataSource.deleteBlog(blogId);
+      return right(res);
     } on ServerException catch (e) {
       return left(Failure(e.message));
     }
   }
 
   @override
-  Future<Either<Failure, Blog>> editBlog(Blog blog, File? image) async {
+  Future<Either<Failure, Blog>> editBlog({
+    required String blogId,
+    required String title,
+    required String content,
+    required List<String> tags,
+    required File? image,
+  }) async {
     try {
       if (!await (connectionChecker.isConnected)) {
         return left(Failure('无法连接到网络'));
       }
-      BlogModel blogToUpdate = await blogRemoteDataSource.getBlogById(blog.id);
+      BlogModel blogToUpdate = await blogRemoteDataSource.getBlogById(blogId);
 
       if (image != null) {
         final imageUrl = await blogRemoteDataSource.uploadBlogImage(
             image: image, blog: blogToUpdate);
         blogToUpdate = blogToUpdate.copyWith(imageUrl: imageUrl);
       }
-      final blogUpdated =
-          await blogRemoteDataSource.editBlog(blogToUpdate.copyWith(
-        title: blog.title,
-        content: blog.content,
-        tags: blog.tags,
-      ));
+      blogToUpdate = blogToUpdate.copyWith(
+        id: blogId,
+        title: title,
+        content: content,
+        tags: tags,
+        updatedAt: DateTime.now(),
+      );
+
+      final blogUpdated = await blogRemoteDataSource.editBlog(blogToUpdate);
+
       return right(blogUpdated);
     } on ServerException catch (e) {
       return left(Failure(e.message));

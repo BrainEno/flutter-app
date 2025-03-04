@@ -8,7 +8,7 @@ enum BlogEditorContentType {
   other,
 }
 
-class BlogEditor extends StatelessWidget {
+class EditorField extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
   final BlogEditorContentType contentType; // New: Content Type parameter
@@ -17,7 +17,7 @@ class BlogEditor extends StatelessWidget {
   final int? maxLines;
   final bool expands;
 
-  const BlogEditor({
+  const EditorField({
     super.key,
     required this.controller,
     required this.hintText,

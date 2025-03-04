@@ -29,7 +29,7 @@ class BlogGridItem extends StatelessWidget {
                     ? Image.network(
                         blog.imageUrl,
                         fit: BoxFit.cover,
-                        color: Colors.black.withAlpha((0.3 * 255).toInt()),
+                        color: Colors.black.withAlpha((0.35 * 255).toInt()),
                         colorBlendMode: BlendMode.darken,
                       )
                     : Container(color: Colors.grey[300]),
@@ -66,17 +66,8 @@ class BlogGridItem extends StatelessWidget {
                     const Spacer(),
                     // Poster info
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        CircleAvatar(
-                          radius: 12,
-                          backgroundImage: blog.posterAvatar != null
-                              ? NetworkImage(blog.posterAvatar!)
-                              : null,
-                          child: blog.posterAvatar == null
-                              ? const Icon(Icons.person, size: 12)
-                              : null,
-                        ),
-                        const SizedBox(width: 8),
                         Text(
                           blog.posterName ?? 'Unknown',
                           style: const TextStyle(
@@ -85,17 +76,17 @@ class BlogGridItem extends StatelessWidget {
                             fontWeight: FontWeight.w500,
                           ),
                         ),
+                        Text(
+                          blog.updatedAt.toString().substring(0, 10),
+                          style: const TextStyle(
+                            fontSize: 10.0,
+                            color: Colors.white70,
+                          ),
+                        ),
                       ],
                     ),
-                    const SizedBox(height: 4),
+
                     // Date
-                    Text(
-                      blog.updatedAt.toString().substring(0, 10),
-                      style: const TextStyle(
-                        fontSize: 10.0,
-                        color: Colors.white70,
-                      ),
-                    ),
                   ],
                 ),
               ),

@@ -25,8 +25,16 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   }
 
   @override
-  Future<UserModel> editUser(UserModel user) {
-    // TODO: implement editUser
-    throw UnimplementedError();
+  Future<UserModel> editUser(UserModel user) async {
+    try {
+      final userUpdated = await supabaseClient
+          .from('profiles')
+          .update({'name': user.name, 'email': user.email})
+          .eq('id', user.id)
+          .single();
+      return UserModel.fromJson(userUpdated);
+    } catch (e) {
+      throw ServerException(e.toString());
+    }
   }
 }

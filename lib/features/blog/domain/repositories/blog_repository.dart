@@ -13,6 +13,10 @@ abstract interface class BlogRepository {
     required List<String> tags,
   });
 
+  Future<Either<Failure, bool>> deleteBlog(
+    String blogId,
+  );
+
   Future<Either<Failure, List<Blog>>> getAllBlogs();
 
   Future<Either<Failure, List<Blog>>> getBlogsByTag(String tag);
@@ -21,9 +25,13 @@ abstract interface class BlogRepository {
 
   Future<Either<Failure, List<Blog>>> getBlogsByUser(String userId);
 
-  Future<Either<Failure, Blog>> editBlog(Blog blog, File? image);
-
-  Future<Either<Failure, bool>> deleteBlog(String blogId);
+  Future<Either<Failure, Blog>> editBlog({
+    required String blogId,
+    required String title,
+    required String content,
+    required List<String> tags,
+    required File? image,
+  });
 
   Future<Either<Failure, bool>> toggleLikeBlog(String userId, String blogId);
 

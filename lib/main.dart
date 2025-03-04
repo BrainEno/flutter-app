@@ -4,6 +4,7 @@ import 'package:belog/core/common/widgets/destination_view.dart';
 import 'package:belog/core/theme/app_pallete.dart';
 import 'package:belog/core/theme/theme.dart';
 import 'package:belog/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:belog/features/blog/presentation/blocs/blog_by/bloc/blog_by_bloc.dart';
 import 'package:belog/features/blog/presentation/blocs/blog_liked/blog_liked_bloc.dart';
 import 'package:belog/features/blog/presentation/blocs/blog/blog_bloc.dart';
 import 'package:belog/features/blog/presentation/blocs/blog_search/bloc/blog_search_bloc.dart';
@@ -23,7 +24,8 @@ void main() async {
       BlocProvider(create: (_) => serviceLocator<BlogBloc>()),
       BlocProvider(create: (_) => serviceLocator<BlogLikedBloc>()),
       BlocProvider(create: (_) => serviceLocator<BlogUploadBloc>()),
-      BlocProvider(create: (_) => serviceLocator<BlogSearchBloc>())
+      BlocProvider(create: (_) => serviceLocator<BlogSearchBloc>()),
+      BlocProvider(create: (_) => serviceLocator<BlogByBloc>())
     ],
     child: const Home(),
   ));

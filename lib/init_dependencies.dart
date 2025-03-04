@@ -14,12 +14,16 @@ import 'package:belog/features/blog/data/datasources/blog_remote_data_source.dar
 import 'package:belog/features/blog/data/repositories/blog_repository_impl.dart';
 import 'package:belog/features/blog/domain/entities/blog.dart';
 import 'package:belog/features/blog/domain/repositories/blog_repository.dart';
+import 'package:belog/features/blog/domain/usecase/delete_blog.dart';
 import 'package:belog/features/blog/domain/usecase/get_all_blogs.dart';
+import 'package:belog/features/blog/domain/usecase/get_blogs_by_poster.dart';
 import 'package:belog/features/blog/domain/usecase/get_user_liked_blogs.dart';
 import 'package:belog/features/blog/domain/usecase/is_blog_liked.dart';
 import 'package:belog/features/blog/domain/usecase/search_blogs.dart';
 import 'package:belog/features/blog/domain/usecase/toggle_like_blog.dart';
+import 'package:belog/features/blog/domain/usecase/update_blog.dart';
 import 'package:belog/features/blog/domain/usecase/upload_blog.dart';
+import 'package:belog/features/blog/presentation/blocs/blog_by/bloc/blog_by_bloc.dart';
 import 'package:belog/features/blog/presentation/blocs/blog_liked/blog_liked_bloc.dart';
 import 'package:belog/features/blog/presentation/blocs/blog/blog_bloc.dart';
 import 'package:belog/features/blog/presentation/blocs/blog_search/bloc/blog_search_bloc.dart';
@@ -102,15 +106,22 @@ Future<void> _initBlog() async {
     ..registerFactory(() => ToggleLikeBlog(serviceLocator<BlogRepository>()))
     ..registerFactory(() => IsBlogLiked(serviceLocator<BlogRepository>()))
     ..registerFactory(() => GetUserLikedBlogs(serviceLocator<BlogRepository>()))
+    ..registerFactory(() => UpdateBlog(serviceLocator<BlogRepository>()))
+    ..registerFactory(() => DeleteBlog(serviceLocator<BlogRepository>()))
+    ..registerFactory(() => GetBlogsByPoster(serviceLocator<BlogRepository>()))
     // Bloc
     ..registerLazySingleton(
         () => BlogBloc(getAllBlogs: serviceLocator<GetAllBlogs>()))
-    ..registerLazySingleton(
-        () => BlogUploadBloc(uploadBlog: serviceLocator<UploadBlog>()))
+    ..registerLazySingleton(() => BlogUploadBloc(
+        uploadBlog: serviceLocator<UploadBlog>(),
+        updateBlog: serviceLocator<UpdateBlog>(),
+        deleteBlog: serviceLocator<DeleteBlog>()))
     ..registerLazySingleton(
         () => BlogSearchBloc(searchBlogs: serviceLocator<SearchBlogs>()))
     ..registerLazySingleton(() => BlogLikedBloc(
         toggleBlogLike: serviceLocator<ToggleLikeBlog>(),
         isBlogLiked: serviceLocator<IsBlogLiked>(),
-        getUserLikedBlogs: serviceLocator<GetUserLikedBlogs>()));
+        getUserLikedBlogs: serviceLocator<GetUserLikedBlogs>()))
+    ..registerLazySingleton(
+        () => BlogByBloc(getBlogsByPoster: serviceLocator<GetBlogsByPoster>()));
 }

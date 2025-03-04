@@ -2,7 +2,8 @@ import 'package:belog/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:belog/core/common/widgets/loader.dart';
 import 'package:belog/core/utils/show_snackbar.dart';
 import 'package:belog/features/blog/presentation/blocs/blog/blog_bloc.dart';
-import 'package:belog/features/blog/presentation/pages/add_new_blog_page.dart';
+import 'package:belog/features/blog/presentation/blocs/bog_upload/bloc/blog_upload_bloc.dart';
+import 'package:belog/features/blog/presentation/pages/blog_editor_page.dart';
 import 'package:belog/features/blog/presentation/widgets/blog_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -34,6 +35,10 @@ class _BlogPageState extends State<BlogPage> {
         listener: (context, state) {
           if (state is BlogListFailure) {
             showSnackBar(context, state.error);
+          }
+          if (state is BlogUploadSuccess || state is BlogDeleteSuccess) {
+            // Trigger a refresh of the blog list
+            context.read<BlogBloc>().add(BlogFetchAllBlogs());
           }
         },
         builder: (context, state) {
@@ -87,7 +92,7 @@ class _BlogPageState extends State<BlogPage> {
           return isLoggedIn
               ? FloatingActionButton(
                   onPressed: () {
-                    Navigator.push(context, AddNewBlogPage.route());
+                    Navigator.push(context, BlogEditorPage.route());
                   },
                   child: const Icon(CupertinoIcons.add),
                 )

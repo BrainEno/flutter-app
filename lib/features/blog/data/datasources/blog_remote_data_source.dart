@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_null_comparison
+
 import 'dart:io';
 
 import 'package:belog/core/error/exceptions.dart';
@@ -9,14 +11,15 @@ abstract interface class BlogRemoteDataSource {
   Future<BlogModel> uploadBlog(BlogModel blog);
   Future<String> uploadBlogImage(
       {required File image, required BlogModel blog});
-
+  Future<String> uploadAvatarImage(
+      {required File image, required String userId});
   Future<List<BlogModel>> getAllBlogs();
   Future<BlogModel> getBlogById(String blogId);
   Future<List<BlogModel>> getBlogsByPosterId(String posterId);
   Future<List<BlogModel>> getBlogsByTag(String tag);
   Future<List<BlogModel>> searchBlogs(String query);
   Future<BlogModel> editBlog(BlogModel blog);
-  Future<void> deleteBlog(String blogId);
+  Future<bool> deleteBlog(String blogId);
   Future<List<BlogModel>> getUserLikedBlogs(String userId);
   Future<bool> toggleLikeBlog(String userId, String blogId);
   Future<bool> isBlogLikedByUser(String userId, String blogId);
@@ -41,7 +44,9 @@ class BlogRemoteDataSourceImpl implements BlogRemoteDataSource {
   Future<String> uploadBlogImage(
       {required File image, required BlogModel blog}) async {
     try {
-      await supabaseClient.storage.from('blog_images').upload(blog.id, image);
+      await supabaseClient.storage
+          .from('blog_images')
+          .upload(blog.id, image, fileOptions: FileOptions(upsert: true));
       return supabaseClient.storage.from('blog_images').getPublicUrl(blog.id);
     } catch (e) {
       throw ServerException(e.toString());
@@ -127,9 +132,27 @@ class BlogRemoteDataSourceImpl implements BlogRemoteDataSource {
   }
 
   @override
-  Future<void> deleteBlog(String blogId) async {
+  Future<bool> deleteBlog(String blogId) async {
     try {
+      final blog = await supabaseClient
+          .from('blogs')
+          .select('image_url')
+          .eq('id', blogId)
+          .single();
+
+      final String imageUrl = blog['image_url'];
+
       await supabaseClient.from('blogs').delete().eq('id', blogId);
+
+      if (imageUrl.isNotEmpty) {
+        final int index = imageUrl.lastIndexOf('/');
+        final String path = imageUrl.substring(index + 1);
+        print(path);
+        await supabaseClient.storage
+            .from('blog_images')
+            .remove(["blog_images/$path"]);
+      }
+      return true;
     } catch (e) {
       throw ServerException(e.toString());
     }
@@ -140,13 +163,14 @@ class BlogRemoteDataSourceImpl implements BlogRemoteDataSource {
     try {
       final blogUpdated = await supabaseClient
           .from('blogs')
-          .update({
-            'title': blog.title,
-            'content': blog.content,
-            'tags': blog.tags,
-          })
+          .update(blog.toJson())
           .eq('id', blog.id)
+          .select()
           .single();
+
+      if (blogUpdated == null) {
+        throw ServerException('Blog not found or update failed');
+      }
       return BlogModel.fromJson(blogUpdated);
     } catch (e) {
       throw ServerException(e.toString());
@@ -156,9 +180,14 @@ class BlogRemoteDataSourceImpl implements BlogRemoteDataSource {
   @override
   Future<BlogModel> getBlogById(String blogId) async {
     try {
-      final blog =
+      final res =
           await supabaseClient.from('blogs').select().eq('id', blogId).single();
-      return BlogModel.fromJson(blog);
+
+      if (res == null) {
+        throw ServerException('Blog with ID $blogId not found');
+      }
+
+      return BlogModel.fromJson(res);
     } catch (e) {
       throw ServerException(e.toString());
     }
@@ -226,6 +255,19 @@ class BlogRemoteDataSourceImpl implements BlogRemoteDataSource {
         // 404-like error when no results found
         return false;
       }
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<String> uploadAvatarImage(
+      {required File image, required String userId}) async {
+    try {
+      await supabaseClient.storage
+          .from('avatars')
+          .upload(userId, image, fileOptions: FileOptions(upsert: true));
+      return supabaseClient.storage.from('blog_images').getPublicUrl(userId);
+    } catch (e) {
       throw ServerException(e.toString());
     }
   }
