@@ -1,4 +1,3 @@
-import 'package:belog/core/usecase/usecase.dart';
 import 'package:belog/features/blog/domain/entities/blog.dart';
 import 'package:belog/features/blog/domain/usecase/get_all_blogs.dart';
 import 'package:flutter/material.dart';
@@ -19,12 +18,15 @@ class BlogBloc extends Bloc<BlogEvent, BlogState> {
 
   void _onFetchAllBlogs(
       BlogFetchAllBlogs event, Emitter<BlogState> emit) async {
-    emit(BlogListLoading());
-    final res = await _getAllBlogs(NoParams());
+    emit(BlogListLoading(previousState: state));
+    final res = await _getAllBlogs(GetAllBlogsParams(page: event.page));
 
     res.fold(
       (failure) => emit(BlogListFailure(error: failure.message)),
-      (blogs) => emit(BlogLoaded(blogs: blogs)),
+      (blogs) => emit(BlogLoaded(
+          blogs: event.refresh || state is! BlogLoaded
+              ? blogs
+              : (state as BlogLoaded).blogs + blogs)),
     );
   }
 }

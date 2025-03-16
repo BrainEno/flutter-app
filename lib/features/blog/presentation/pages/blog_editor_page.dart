@@ -100,7 +100,9 @@ class _BlogEditorState extends State<BlogEditorPage> {
       'tags': selectedTags,
     };
     await prefs.setString(draftKey, jsonEncode(draftData));
-    showSnackBar(context, '草稿已保存');
+    if (mounted) {
+      showSnackBar(context, '草稿已保存');
+    }
   }
 
   @override
