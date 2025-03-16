@@ -16,8 +16,10 @@ jobs:
           architecture: x64
       - run: flutter pub get
 
-      - name: Export environment variables
+      - name: Creat .env file
         run: |
+          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> .env
+          echo "SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}" >> .env
           echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> $GITHUB_ENV
           echo "SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}" >> $GITHUB_ENV
 
