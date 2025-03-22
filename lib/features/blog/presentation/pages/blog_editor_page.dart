@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:belog/core/common/cubits/app_user/app_user_cubit.dart';
@@ -7,13 +6,15 @@ import 'package:belog/core/theme/app_pallete.dart';
 import 'package:belog/core/utils/pick_image.dart';
 import 'package:belog/core/utils/show_snackbar.dart';
 import 'package:belog/features/blog/domain/entities/blog.dart';
+import 'package:belog/features/blog/domain/entities/blog_draft.dart';
 import 'package:belog/features/blog/presentation/blocs/bog_upload/bloc/blog_upload_bloc.dart';
 import 'package:belog/features/blog/presentation/pages/blog_page.dart';
 import 'package:belog/features/blog/presentation/widgets/editor_field.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:get_it/get_it.dart';
+import 'package:isar/isar.dart';
 
 class BlogEditorPage extends StatefulWidget {
   final Blog? blog;
@@ -39,7 +40,33 @@ class _BlogEditorState extends State<BlogEditorPage> {
     if (widget.blog != null) {
       titleController.text = widget.blog!.title;
       contentController.text = widget.blog!.content;
-      selectedTags = widget.blog!.tags;
+      selectedTags = List.from(widget.blog!.tags);
+    }
+    loadDraft();
+  }
+
+  void loadDraft() async {
+    final isar = GetIt.instance<Isar>();
+    final blogId = widget.blog?.id;
+
+    final draft = await isar.blogDrafts
+        .filter()
+        .blogIdEqualTo(blogId)
+        .or()
+        .blogIdIsNull()
+        .sortByUpdatedAtDesc()
+        .findFirst();
+
+    if (draft != null && mounted) {
+      setState(() {
+        titleController.text = draft.title;
+        contentController.text = draft.content;
+        selectedTags = List.from(draft.tags);
+      });
+
+      if (mounted) {
+        showSnackBar(context, '已加载最近的草稿');
+      }
     }
   }
 
@@ -90,16 +117,29 @@ class _BlogEditorState extends State<BlogEditorPage> {
   }
 
   void saveDraft() async {
-    final prefs = await SharedPreferences.getInstance();
-    final draftKey = widget.blog == null
-        ? 'new_blog_draft'
-        : 'blog_${widget.blog!.id}_draft';
-    final draftData = {
-      'title': titleController.text,
-      'content': contentController.text,
-      'tags': selectedTags,
-    };
-    await prefs.setString(draftKey, jsonEncode(draftData));
+    final isar = GetIt.instance<Isar>();
+    final blogId = widget.blog?.id;
+
+    await isar.writeTxn(() async {
+      // Delete existing draft if it exists
+      final existingDraft =
+          await isar.blogDrafts.filter().blogIdEqualTo(blogId).findFirst();
+
+      if (existingDraft != null) {
+        await isar.blogDrafts.delete(existingDraft.id);
+      }
+
+      final blogDraft = BlogDraft(
+        blogId: blogId,
+        title: titleController.text,
+        content: contentController.text,
+        tags: selectedTags,
+        updatedAt: DateTime.now(),
+      );
+
+      await isar.blogDrafts.put(blogDraft);
+    });
+
     if (mounted) {
       showSnackBar(context, '草稿已保存');
     }

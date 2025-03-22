@@ -15,6 +15,7 @@ import 'package:belog/features/blog/data/datasources/blog_local_data_source.dart
 import 'package:belog/features/blog/data/datasources/blog_remote_data_source.dart';
 import 'package:belog/features/blog/data/repositories/blog_repository_impl.dart';
 import 'package:belog/features/blog/domain/entities/blog.dart';
+import 'package:belog/features/blog/domain/entities/blog_draft.dart';
 import 'package:belog/features/blog/domain/repositories/blog_repository.dart';
 import 'package:belog/features/blog/domain/usecase/delete_blog.dart';
 import 'package:belog/features/blog/domain/usecase/get_all_blogs.dart';
@@ -68,7 +69,7 @@ Future<void> initDependencies() async {
 
   final directory = await getApplicationDocumentsDirectory();
   final isarInstance = await Isar.open(
-    [BlogSchema], // Pass your Blog schema here
+    [BlogSchema, BlogDraftSchema], // Pass your Blog schema here
     directory: directory.path,
   );
 
