@@ -1,3 +1,4 @@
+import 'package:belog/features/user/presentation/pages/about_page.dart';
 import 'package:belog/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:belog/core/utils/show_snackbar.dart';
 import 'package:belog/features/auth/presentation/bloc/auth_bloc.dart';
@@ -115,7 +116,8 @@ class ProfilePage extends StatelessWidget {
                                   // Navigate to account settings
                                   break;
                                 case 3:
-                                  // Show about us
+                                  // Navigate to about us
+                                  Navigator.push(context, AboutPage.route());
                                   break;
                                 case 4:
                                   _onLogoutClick(context);
