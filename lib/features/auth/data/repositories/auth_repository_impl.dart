@@ -25,7 +25,10 @@ class AuthRepositoryImpl implements AuthRepository {
         }
 
         return right(UserModel(
-            id: session.user.id, email: session.user.email ?? '', name: ''));
+            id: session.user.id,
+            email: session.user.email ?? '',
+            name: '',
+            updatedAt: DateTime.parse(session.user.updatedAt as String)));
       }
       final userModel = await remoteDataSource.getCurrentUserData();
       if (userModel == null) {

@@ -9,6 +9,8 @@ import 'package:belog/features/blog/presentation/blocs/blog_liked/blog_liked_blo
 import 'package:belog/features/blog/presentation/blocs/blog/blog_bloc.dart';
 import 'package:belog/features/blog/presentation/blocs/blog_search/bloc/blog_search_bloc.dart';
 import 'package:belog/features/blog/presentation/blocs/bog_upload/bloc/blog_upload_bloc.dart';
+import 'package:belog/features/user/bloc/user_edit_bloc.dart';
+
 import 'package:belog/init_dependencies.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,7 +27,8 @@ void main() async {
       BlocProvider(create: (_) => serviceLocator<BlogLikedBloc>()),
       BlocProvider(create: (_) => serviceLocator<BlogUploadBloc>()),
       BlocProvider(create: (_) => serviceLocator<BlogSearchBloc>()),
-      BlocProvider(create: (_) => serviceLocator<BlogByBloc>())
+      BlocProvider(create: (_) => serviceLocator<BlogByBloc>()),
+      BlocProvider(create: (_) => serviceLocator<UserEditBloc>()),
     ],
     child: const Home(),
   ));

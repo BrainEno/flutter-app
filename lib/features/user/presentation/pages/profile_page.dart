@@ -3,6 +3,7 @@ import 'package:belog/core/utils/show_snackbar.dart';
 import 'package:belog/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:belog/features/auth/presentation/pages/login_page.dart';
 import 'package:belog/features/blog/presentation/pages/user_blogs_page.dart';
+import 'package:belog/features/user/presentation/pages/edit_user_info_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -39,10 +40,10 @@ class ProfilePage extends StatelessWidget {
                   children: [
                     CircleAvatar(
                       radius: 60,
-                      backgroundImage: state.user.avartarUrl.isNotEmpty
-                          ? NetworkImage(state.user.avartarUrl)
+                      backgroundImage: state.user.avatarUrl.isNotEmpty
+                          ? NetworkImage(state.user.avatarUrl)
                           : null,
-                      child: state.user.avartarUrl.isEmpty
+                      child: state.user.avatarUrl.isEmpty
                           ? Icon(Icons.person, size: 60)
                           : null,
                     ),
@@ -53,10 +54,15 @@ class ProfilePage extends StatelessWidget {
                           fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      state.user.email,
-                      style:
-                          TextStyle(fontSize: 16, color: Colors.grey.shade600),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                      child: Text(
+                        state.user.website.isNotEmpty ? state.user.website : '',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 24),
                     const Divider(),
@@ -96,6 +102,9 @@ class ProfilePage extends StatelessWidget {
                               switch (index) {
                                 case 0:
                                   // Navigate to edit profile
+                                  Navigator.push(
+                                      context, EditUserInfoPage.route());
+
                                   break;
                                 case 1:
                                   // Navigate to my articles

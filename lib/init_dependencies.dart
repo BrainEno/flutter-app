@@ -31,6 +31,11 @@ import 'package:belog/features/blog/presentation/blocs/blog_liked/blog_liked_blo
 import 'package:belog/features/blog/presentation/blocs/blog/blog_bloc.dart';
 import 'package:belog/features/blog/presentation/blocs/blog_search/bloc/blog_search_bloc.dart';
 import 'package:belog/features/blog/presentation/blocs/bog_upload/bloc/blog_upload_bloc.dart';
+import 'package:belog/features/user/bloc/user_edit_bloc.dart';
+import 'package:belog/features/user/data/datasources/user_remote_data_source.dart';
+import 'package:belog/features/user/data/repositories/user_repository_impl.dart';
+import 'package:belog/features/user/domain/repositories/user_repository.dart';
+import 'package:belog/features/user/domain/usecases/edit_user_usecase.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
@@ -63,6 +68,7 @@ Future<void> initDependencies() async {
 
   _initAuth();
   await _initBlog();
+  await _initUser();
 
   final supabase = await Supabase.initialize(
       url: AppSecrets.supabaseUrl ?? '', anonKey: AppSecrets.supabaseKey ?? '');
@@ -146,4 +152,20 @@ Future<void> _initBlog() async {
         getUserLikedBlogs: serviceLocator<GetUserLikedBlogs>()))
     ..registerLazySingleton(
         () => BlogByBloc(getBlogsByPoster: serviceLocator<GetBlogsByPoster>()));
+}
+
+Future<void> _initUser() async {
+  // Datasource
+  serviceLocator
+    ..registerFactory<UserRemoteDataSource>(
+        () => UserRemoteDataSourceImpl(serviceLocator<SupabaseClient>()))
+    // Repository
+    ..registerFactory<UserRepository>(() => UserRepositoryImpl(
+        serviceLocator<UserRemoteDataSource>(), serviceLocator()))
+    // Usecases
+    ..registerFactory(() => EditUserUseCase(serviceLocator()))
+    ..registerLazySingleton(() => UserEditBloc(
+          editUserUseCase: serviceLocator(),
+          appUserCubit: serviceLocator(),
+        ));
 }
