@@ -35,36 +35,58 @@ class _SearchBlogPageState extends State<SearchBlogPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Container(
-          decoration: BoxDecoration(
-            color: AppPallete.greyColor.withAlpha((0.2 * 255).toInt()),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: TextField(
-            controller: _searchController,
-            onSubmitted: _onSearch,
-            decoration: InputDecoration(
-              hintText: '搜索',
-              border: InputBorder.none,
-              hintStyle: TextStyle(color: AppPallete.whiteColor.withAlpha(70)),
-              contentPadding: EdgeInsets.symmetric(horizontal: 16),
-              prefixIcon: Icon(Icons.search,
-                  color: AppPallete.whiteColor.withAlpha(70)),
-              suffixIcon: _searchController.text.isNotEmpty
-                  ? IconButton(
-                      icon: Icon(Icons.clear, color: AppPallete.whiteColor),
-                      onPressed: () {
-                        setState(() {
-                          _searchController.clear();
-                          _searchResults = [];
-                        });
-                      },
-                    )
-                  : null,
+        toolbarHeight: 100,
+        title: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ImageIcon(
+                  AssetImage('assets/images/icon.png'),
+                  size: 30,
+                ),
+                SizedBox(
+                  width: 7,
+                ),
+                const Text('Bottom Think'),
+              ],
             ),
-            style: TextStyle(color: AppPallete.whiteColor),
-            autofocus: false,
-          ),
+            SizedBox(
+              height: 14,
+            ),
+            Container(
+              decoration: BoxDecoration(
+                color: AppPallete.greyColor.withAlpha((0.2 * 255).toInt()),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: TextField(
+                controller: _searchController,
+                onSubmitted: _onSearch,
+                decoration: InputDecoration(
+                  hintText: '搜索',
+                  border: InputBorder.none,
+                  hintStyle:
+                      TextStyle(color: AppPallete.whiteColor.withAlpha(70)),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                  prefixIcon: Icon(Icons.search,
+                      color: AppPallete.whiteColor.withAlpha(70)),
+                  suffixIcon: _searchController.text.isNotEmpty
+                      ? IconButton(
+                          icon: Icon(Icons.clear, color: AppPallete.whiteColor),
+                          onPressed: () {
+                            setState(() {
+                              _searchController.clear();
+                              _searchResults = [];
+                            });
+                          },
+                        )
+                      : null,
+                ),
+                style: TextStyle(color: AppPallete.whiteColor),
+                autofocus: false,
+              ),
+            ),
+          ],
         ),
       ),
       body: _searchController.text.isEmpty
@@ -95,7 +117,7 @@ class _SearchBlogPageState extends State<SearchBlogPage> {
                   builder: (context, state) {
                     return Center(
                       child: Text(
-                        'No results found',
+                        '加载中...',
                         style: TextStyle(
                             fontSize: 18, color: AppPallete.greyColor),
                       ),

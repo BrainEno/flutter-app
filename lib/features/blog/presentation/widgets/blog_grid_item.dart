@@ -1,4 +1,5 @@
 import 'package:belog/core/utils/extract_description.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:belog/features/blog/domain/entities/blog.dart';
 
@@ -26,8 +27,9 @@ class BlogGridItem extends StatelessWidget {
               // Background image with gradient overlay
               Positioned.fill(
                 child: blog.imageUrl.isNotEmpty
-                    ? Image.network(
-                        blog.imageUrl,
+                    ? CachedNetworkImage(
+                        imageUrl:
+                            '${blog.imageUrl}?v=${blog.updatedAt.microsecondsSinceEpoch}',
                         fit: BoxFit.cover,
                         color: Colors.black.withAlpha((0.35 * 255).toInt()),
                         colorBlendMode: BlendMode.darken,

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:belog/core/theme/app_pallete.dart';
 import 'package:belog/features/blog/domain/entities/blog.dart';
@@ -75,7 +76,8 @@ class _BlogCardState extends State<BlogCard>
                   ),
                 ],
                 image: DecorationImage(
-                  image: NetworkImage(widget.blog.imageUrl),
+                  image: CachedNetworkImageProvider(
+                      '${widget.blog.imageUrl}?v=${widget.blog.updatedAt.microsecondsSinceEpoch}'),
                   fit: BoxFit.cover,
                 ),
                 gradient: LinearGradient(

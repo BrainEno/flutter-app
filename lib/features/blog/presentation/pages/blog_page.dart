@@ -81,7 +81,19 @@ class _BlogPageState extends State<BlogPage> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Bottom Think'),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ImageIcon(
+              AssetImage('assets/images/icon.png'),
+              size: 30,
+            ),
+            SizedBox(
+              width: 7,
+            ),
+            const Text('Bottom Think'),
+          ],
+        ),
       ),
       body: BlocConsumer<BlogBloc, BlogState>(
         listener: (context, state) {

@@ -30,7 +30,7 @@ class UserModel extends User {
       'name': name,
       'avatar_url': avatarUrl,
       'website': website,
-      'updated_at': updatedAt.toIso8601String(),
+      'updated_at': updatedAt.toUtc().toIso8601String(),
     };
   }
 

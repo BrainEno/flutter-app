@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:belog/core/common/cubits/app_user/app_user_cubit.dart';
@@ -15,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class BlogEditorPage extends StatefulWidget {
   final Blog? blog;
@@ -33,6 +35,8 @@ class _BlogEditorState extends State<BlogEditorPage> {
   List<String> selectedTags = [];
   File? image;
   bool isNewImageSelected = false;
+  String? imageUrl;
+  DateTime? updatedAt;
 
   @override
   void initState() {
@@ -233,7 +237,6 @@ class _BlogEditorState extends State<BlogEditorPage> {
             showSnackBar(context, state.error);
           } else if (state is BlogUploadSuccess) {
             if (widget.blog == null) {
-              // New blog created
               showSnackBar(context, '上传成功');
               Navigator.pushAndRemoveUntil(
                 context,
@@ -241,14 +244,12 @@ class _BlogEditorState extends State<BlogEditorPage> {
                 (route) => false,
               );
             } else {
-              // Existing blog updated
               if (isNewImageSelected && widget.blog!.imageUrl.isNotEmpty) {
-                // Evict the old image from the cache
                 PaintingBinding.instance.imageCache
                     .evict(Key(widget.blog!.imageUrl));
               }
               showSnackBar(context, '更新成功');
-              Navigator.pop(context); // Return to the previous screen
+              Navigator.pop(context);
             }
           } else if (state is BlogDeleteSuccess) {
             showSnackBar(context, '删除成功');
@@ -256,10 +257,6 @@ class _BlogEditorState extends State<BlogEditorPage> {
           }
         },
         builder: (context, state) {
-          if (state is BlogUploadFailure) {
-            showSnackBar(context, '错误: ${state.error}');
-          }
-
           if (state is BlogUploadLoading || state is BlogDeleteLoading) {
             return const Loader();
           }
@@ -272,6 +269,52 @@ class _BlogEditorState extends State<BlogEditorPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    // New buttons added here
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        IconButton(
+                          onPressed: saveDraft,
+                          icon: const Icon(
+                            Icons.save,
+                          ),
+                          style: IconButton.styleFrom(
+                            backgroundColor: Colors.blue.shade800,
+                            foregroundColor:
+                                Theme.of(context).colorScheme.onPrimary,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 16,
+                        ),
+                        IconButton(
+                          onPressed: saveBlog,
+                          icon: const Icon(Icons.upload),
+                          style: IconButton.styleFrom(
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
+                            foregroundColor:
+                                Theme.of(context).colorScheme.onPrimary,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 15,
+                        )
+                      ],
+                    ),
+                    const SizedBox(
+                        height: 20), // Space between buttons and image
+                    // Existing image container
                     GestureDetector(
                       onTap: selectImage,
                       child: image != null && isNewImageSelected
@@ -290,7 +333,9 @@ class _BlogEditorState extends State<BlogEditorPage> {
                                   width: double.infinity,
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(12),
-                                    child: Image.network(widget.blog!.imageUrl,
+                                    child: CachedNetworkImage(
+                                        imageUrl:
+                                            '${widget.blog!.imageUrl}?v=${widget.blog?.updatedAt.microsecondsSinceEpoch ?? ''}',
                                         fit: BoxFit.cover),
                                   ),
                                 )
@@ -345,6 +390,7 @@ class _BlogEditorState extends State<BlogEditorPage> {
                                 ),
                     ),
                     const SizedBox(height: 36),
+                    // ... rest of the existing Column children (tags, title, content) ...
                     Wrap(
                       spacing: 10.0,
                       runSpacing: 10.0,

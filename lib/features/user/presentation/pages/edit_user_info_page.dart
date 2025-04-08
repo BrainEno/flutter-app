@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:belog/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:belog/core/utils/pick_image.dart';
 import 'package:belog/core/utils/show_snackbar.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:belog/features/user/bloc/user_edit_bloc.dart';
@@ -20,6 +21,7 @@ class _EditUserInfoPageState extends State<EditUserInfoPage> {
   File? image;
   bool isNewImageSelected = false;
   String? avatarUrl;
+  DateTime? updatedAt;
   bool _isDisposed = false; // Add this flag
 
   @override
@@ -27,11 +29,11 @@ class _EditUserInfoPageState extends State<EditUserInfoPage> {
     final state = context.read<AppUserCubit>().state;
     if (state is AppUserLoggedIn) {
       if (!_isDisposed) {
-        // Check if the widget is disposed
         _nameController.text = state.user.name;
         _emailController.text = state.user.email;
         _websiteController.text = state.user.website;
-        avatarUrl = state.user.avatarUrl; // Assuming avatarUrl field exists
+        avatarUrl = state.user.avatarUrl;
+        updatedAt = state.user.updatedAt;
       }
     }
     super.didChangeDependencies();
@@ -109,7 +111,8 @@ class _EditUserInfoPageState extends State<EditUserInfoPage> {
                                 ? FileImage(image!) as ImageProvider<Object>?
                                 : null) // Added null check
                             : avatarUrl != null && avatarUrl!.isNotEmpty
-                                ? NetworkImage(avatarUrl!)
+                                ? CachedNetworkImageProvider(
+                                    '$avatarUrl?v=${updatedAt?.millisecondsSinceEpoch ?? ''}')
                                 : null,
                         child: isNewImageSelected || avatarUrl != null
                             ? null

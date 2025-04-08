@@ -5,6 +5,7 @@ import 'package:belog/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:belog/features/auth/presentation/pages/login_page.dart';
 import 'package:belog/features/blog/presentation/pages/user_blogs_page.dart';
 import 'package:belog/features/user/presentation/pages/edit_user_info_page.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -34,6 +35,7 @@ class ProfilePage extends StatelessWidget {
         child: BlocBuilder<AppUserCubit, AppUserState>(
           builder: (context, state) {
             if (state is AppUserLoggedIn) {
+              final user = state.user;
               return Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -41,24 +43,27 @@ class ProfilePage extends StatelessWidget {
                   children: [
                     CircleAvatar(
                       radius: 60,
-                      backgroundImage: state.user.avatarUrl.isNotEmpty
-                          ? NetworkImage(state.user.avatarUrl)
+                      backgroundImage: user.avatarUrl.isNotEmpty
+                          ? CachedNetworkImageProvider(
+                              '${user.avatarUrl}?v=${user.updatedAt.millisecondsSinceEpoch}')
                           : null,
-                      child: state.user.avatarUrl.isEmpty
-                          ? Icon(Icons.person, size: 60)
+                      child: user.avatarUrl.isEmpty
+                          ? const Icon(Icons.person, size: 60)
                           : null,
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      state.user.name,
+                      user.name,
                       style: const TextStyle(
-                          fontSize: 24, fontWeight: FontWeight.bold),
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 18.0),
                       child: Text(
-                        state.user.website.isNotEmpty ? state.user.website : '',
+                        user.website.isNotEmpty ? user.website : '',
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey.shade600,
@@ -97,27 +102,32 @@ class ProfilePage extends StatelessWidget {
                             title: Text(
                               item,
                               style: const TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w500),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                             onTap: () {
                               switch (index) {
                                 case 0:
-                                  // Navigate to edit profile
                                   Navigator.push(
-                                      context, EditUserInfoPage.route());
-
+                                    context,
+                                    EditUserInfoPage.route(),
+                                  );
                                   break;
                                 case 1:
-                                  // Navigate to my articles
                                   Navigator.push(
-                                      context, UserBlogsPage.route());
+                                    context,
+                                    UserBlogsPage.route(),
+                                  );
                                   break;
                                 case 2:
                                   // Navigate to account settings
                                   break;
                                 case 3:
-                                  // Navigate to about us
-                                  Navigator.push(context, AboutPage.route());
+                                  Navigator.push(
+                                    context,
+                                    AboutPage.route(),
+                                  );
                                   break;
                                 case 4:
                                   _onLogoutClick(context);
@@ -138,8 +148,10 @@ class ProfilePage extends StatelessWidget {
                   children: [
                     Text(
                       '您还没有登录',
-                      style:
-                          TextStyle(fontSize: 18, color: Colors.grey.shade600),
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey.shade600,
+                      ),
                     ),
                     const SizedBox(height: 16),
                     ElevatedButton(

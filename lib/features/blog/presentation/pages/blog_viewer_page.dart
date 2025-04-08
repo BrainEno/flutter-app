@@ -4,6 +4,7 @@ import 'package:belog/core/utils/calculate_reading_time.dart';
 import 'package:belog/core/utils/show_snackbar.dart';
 import 'package:belog/features/blog/domain/entities/blog.dart';
 import 'package:belog/features/blog/presentation/blocs/blog_liked/blog_liked_bloc.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -66,8 +67,8 @@ class _BlogViewerPageState extends State<BlogViewerPage> {
               background: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.network(
-                    widget.blog.imageUrl,
+                  CachedNetworkImage(
+                    imageUrl: widget.blog.imageUrl,
                     fit: BoxFit.cover,
                   ),
                   Container(
@@ -125,7 +126,8 @@ class _BlogViewerPageState extends State<BlogViewerPage> {
                       CircleAvatar(
                         radius: 20,
                         backgroundImage: widget.blog.posterAvatar != null
-                            ? NetworkImage(widget.blog.posterAvatar!)
+                            ? CachedNetworkImageProvider(
+                                widget.blog.posterAvatar!)
                             : null,
                         child: widget.blog.posterAvatar == null
                             ? const Icon(Icons.person, size: 20)
@@ -180,19 +182,19 @@ class _BlogViewerPageState extends State<BlogViewerPage> {
                       letterSpacing: 0.5,
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 30),
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
                     children: widget.blog.tags
                         .map((tag) => Chip(
                               label: Text(
-                                '#$tag',
+                                tag,
                                 style: const TextStyle(
-                                  fontSize: 12,
-                                  color: AppPallete.gradient1,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                                    fontSize: 12,
+                                    color: AppPallete.gradient1,
+                                    fontWeight: FontWeight.w600,
+                                    letterSpacing: 1.5),
                               ),
                               backgroundColor:
                                   Colors.grey.withAlpha((0.1 * 255).toInt()),
