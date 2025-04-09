@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:belog/core/common/cubits/app_user/app_user_cubit.dart';
@@ -177,6 +176,27 @@ class _BlogEditorState extends State<BlogEditorPage> {
         ),
         centerTitle: true,
         actions: [
+          ElevatedButton(
+            onPressed: saveBlog,
+            style: ElevatedButton.styleFrom(
+              minimumSize: Size(60, 30),
+              backgroundColor: Theme.of(context)
+                  .colorScheme
+                  .primary, // Theme-based background
+              foregroundColor:
+                  Theme.of(context).colorScheme.onPrimary, // Text color
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 8, vertical: 2), // Compact padding
+              textStyle: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold), // Smaller, bold text
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20), // Rounded corners
+              ),
+              elevation: 0,
+            ),
+            child: Text('发布'),
+          ),
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert),
             onSelected: (value) {
@@ -269,49 +289,6 @@ class _BlogEditorState extends State<BlogEditorPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // New buttons added here
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        IconButton(
-                          onPressed: saveDraft,
-                          icon: const Icon(
-                            Icons.save,
-                          ),
-                          style: IconButton.styleFrom(
-                            backgroundColor: Colors.blue.shade800,
-                            foregroundColor:
-                                Theme.of(context).colorScheme.onPrimary,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 0),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 16,
-                        ),
-                        IconButton(
-                          onPressed: saveBlog,
-                          icon: const Icon(Icons.upload),
-                          style: IconButton.styleFrom(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.primary,
-                            foregroundColor:
-                                Theme.of(context).colorScheme.onPrimary,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 0),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 15,
-                        )
-                      ],
-                    ),
                     const SizedBox(
                         height: 20), // Space between buttons and image
                     // Existing image container

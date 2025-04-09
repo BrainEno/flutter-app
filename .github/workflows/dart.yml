@@ -42,7 +42,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: build/ios/iphoneos/FlutterIpaExport.ipa
+          file: build/ios/iphoneos/IpaExport.ipa
           tag: v1.5
           overwrite: true
           body: "Release v1.5, added splash page, and changed CachedNetworkImage"
