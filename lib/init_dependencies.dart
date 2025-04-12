@@ -31,11 +31,14 @@ import 'package:belog/features/blog/presentation/blocs/blog_liked/blog_liked_blo
 import 'package:belog/features/blog/presentation/blocs/blog/blog_bloc.dart';
 import 'package:belog/features/blog/presentation/blocs/blog_search/bloc/blog_search_bloc.dart';
 import 'package:belog/features/blog/presentation/blocs/bog_upload/bloc/blog_upload_bloc.dart';
+import 'package:belog/features/user/bloc/edit_account_bloc.dart';
 import 'package:belog/features/user/bloc/user_edit_bloc.dart';
 import 'package:belog/features/user/data/datasources/user_remote_data_source.dart';
 import 'package:belog/features/user/data/repositories/user_repository_impl.dart';
-import 'package:belog/features/user/domain/repositories/user_repository.dart';
+import 'package:belog/features/user/domain/repositories/user_repository.dart'; // Ensure the correct UserRepository is imported
+import 'package:belog/features/user/domain/usecases/change_email_usecase.dart';
 import 'package:belog/features/user/domain/usecases/edit_user_usecase.dart';
+import 'package:belog/features/user/domain/usecases/reset_password_usecase.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
@@ -161,11 +164,21 @@ Future<void> _initUser() async {
         () => UserRemoteDataSourceImpl(serviceLocator<SupabaseClient>()))
     // Repository
     ..registerFactory<UserRepository>(() => UserRepositoryImpl(
-        serviceLocator<UserRemoteDataSource>(), serviceLocator()))
+        serviceLocator<UserRemoteDataSource>(),
+        serviceLocator<ConnectionChecker>()))
     // Usecases
-    ..registerFactory(() => EditUserUseCase(serviceLocator()))
+    ..registerFactory(() => EditUserUseCase(serviceLocator<UserRepository>()))
+    ..registerFactory(
+        () => ChangeEmailUseCase(serviceLocator<UserRepository>()))
+    ..registerFactory(
+        () => ResetPasswordUseCase(serviceLocator<UserRepository>()))
+    //blocs
     ..registerLazySingleton(() => UserEditBloc(
-          editUserUseCase: serviceLocator(),
+          editUserUseCase: serviceLocator<EditUserUseCase>(),
           appUserCubit: serviceLocator(),
+        ))
+    ..registerLazySingleton(() => EditAccountBloc(
+          changeEmailUseCase: serviceLocator<ChangeEmailUseCase>(),
+          resetPasswordUseCase: serviceLocator<ResetPasswordUseCase>(),
         ));
 }

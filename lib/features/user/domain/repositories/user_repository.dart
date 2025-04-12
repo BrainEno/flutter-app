@@ -11,4 +11,7 @@ abstract class UserRepository {
       required String email,
       required File? avatar,
       required String website});
+
+  Future<Either<Failure, void>> changeEmail(String newEmail);
+  Future<Either<Failure, void>> resetPassword(String newPassword);
 }

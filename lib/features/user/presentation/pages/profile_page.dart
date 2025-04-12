@@ -5,6 +5,7 @@ import 'package:belog/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:belog/features/auth/presentation/pages/login_page.dart';
 import 'package:belog/features/blog/presentation/pages/user_blogs_page.dart';
 import 'package:belog/features/user/presentation/pages/edit_user_info_page.dart';
+import 'package:belog/features/user/presentation/pages/edit_account_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -121,7 +122,10 @@ class ProfilePage extends StatelessWidget {
                                   );
                                   break;
                                 case 2:
-                                  // Navigate to account settings
+                                  Navigator.push(
+                                    context,
+                                    EditAccountPage.route(),
+                                  );
                                   break;
                                 case 3:
                                   Navigator.push(

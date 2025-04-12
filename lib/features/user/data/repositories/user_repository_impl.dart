@@ -48,4 +48,30 @@ class UserRepositoryImpl implements UserRepository {
       return left(Failure(e.message));
     }
   }
+
+  @override
+  Future<Either<Failure, void>> changeEmail(String newEmail) async {
+    if (!await connectionChecker.isConnected) {
+      return left(Failure('无法连接到网络'));
+    }
+    try {
+      await remoteDataSource.changeEmail(newEmail);
+      return right(null);
+    } catch (e) {
+      return left(Failure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> resetPassword(String newPassword) async {
+    if (!await connectionChecker.isConnected) {
+      return left(Failure('无法连接到网络'));
+    }
+    try {
+      await remoteDataSource.changePassword(newPassword);
+      return right(null);
+    } catch (e) {
+      return left(Failure(e.toString()));
+    }
+  }
 }

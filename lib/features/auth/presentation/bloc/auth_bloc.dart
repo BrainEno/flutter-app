@@ -47,11 +47,31 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void _onAuthLogin(AuthLogin event, Emitter<AuthState> emit) async {
-    final res = await _userLogin(
-        UserLoginParams(email: event.email, password: event.password));
+    // Step 1: Perform login authentication
+    final loginRes = await _userLogin(
+      UserLoginParams(email: event.email, password: event.password),
+    );
 
-    res.fold((failure) => emit(AuthFailure(failure.message)),
-        (user) => _emitAuthSuccess(user, emit));
+    // Check if login failed
+    if (loginRes.isLeft()) {
+      final failure = loginRes.fold((l) => l, (_) => null)!;
+      emit(AuthFailure(failure.message));
+      return;
+    }
+
+    // Login succeeded, proceed to fetch full user profile
+    final currentUserRes = await _currentUser(NoParams());
+
+    // Check if fetching user profile failed
+    if (currentUserRes.isLeft()) {
+      final failure = currentUserRes.fold((l) => l, (_) => null)!;
+      emit(AuthFailure('Failed to fetch user profile: ${failure.message}'));
+      return;
+    }
+
+    // Both operations succeeded, emit success
+    final fullUser = currentUserRes.fold((_) => null, (r) => r)!;
+    _emitAuthSuccess(fullUser, emit);
   }
 
   void _isUserLoggedIn(
