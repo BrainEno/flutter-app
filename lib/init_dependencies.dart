@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:belog/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:belog/core/network/connection_checker.dart';
 import 'package:belog/core/secrets/app_secrets.dart';
+import 'package:belog/core/theme/theme_bloc.dart';
+import 'package:belog/core/theme/theme_preference.dart';
 import 'package:belog/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:belog/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:belog/features/auth/domain/repository/auth_repository.dart';
@@ -47,6 +49,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final serviceLocator = GetIt.instance;
+late Isar isar;
 
 Future<void> initDependencies() async {
   // Load from .env (for local development)
@@ -77,16 +80,22 @@ Future<void> initDependencies() async {
       url: AppSecrets.supabaseUrl ?? '', anonKey: AppSecrets.supabaseKey ?? '');
 
   final directory = await getApplicationDocumentsDirectory();
-  final isarInstance = await Isar.open(
-    [BlogSchema, BlogDraftSchema], // Pass your Blog schema here
+  isar = await Isar.open(
+    [
+      ThemePreferenceSchema,
+      BlogSchema,
+      BlogDraftSchema
+    ], // Pass your Blog schema here
     directory: directory.path,
   );
 
-  serviceLocator.registerLazySingleton(() => isarInstance);
+  serviceLocator.registerLazySingleton(() => isar);
   serviceLocator.registerLazySingleton(() => supabase.client);
 
   serviceLocator.registerFactory(() => InternetConnection());
   // core
+  serviceLocator.registerLazySingleton(() => ThemeBloc());
+
   serviceLocator.registerLazySingleton(() => AppUserCubit());
   serviceLocator.registerFactory<ConnectionChecker>(
       () => ConnectionCheckerImpl(serviceLocator()));

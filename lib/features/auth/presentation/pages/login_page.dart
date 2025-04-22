@@ -43,9 +43,6 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    bool isDarkMode =
-        Theme.of(context).brightness == Brightness.dark; // Check for dark mode
-
     return BlocListener<AppUserCubit, AppUserState>(
       listener: (context, state) {
         if (state is AppUserLoggedIn && widget.destination != null) {
@@ -67,19 +64,7 @@ class _LoginPageState extends State<LoginPage> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: isDarkMode
-              ? AppPallete.blackColor
-              : Colors.white, // Dark AppBar background in dark mode
-          elevation: 0,
-          iconTheme: IconThemeData(
-              color: isDarkMode
-                  ? Colors.white
-                  : Colors.black), // Light back arrow in dark mode
-        ),
-        backgroundColor: isDarkMode
-            ? AppPallete.blackColor
-            : Colors.white, // Dark background for Scaffold in dark mode
+        appBar: AppBar(),
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -106,9 +91,6 @@ class _LoginPageState extends State<LoginPage> {
                         style: TextStyle(
                           fontSize: 32,
                           fontWeight: FontWeight.bold,
-                          color: isDarkMode
-                              ? Colors.white
-                              : Colors.black87, // Light title text in dark mode
                         ),
                       ),
                       const SizedBox(height: 40),
@@ -116,22 +98,6 @@ class _LoginPageState extends State<LoginPage> {
                         hintText: "邮箱",
                         controller: emailController,
                         prefixIcon: Icons.email_outlined,
-                        style: TextStyle(
-                            fontSize: 16,
-                            color: isDarkMode
-                                ? Colors.white
-                                : Colors
-                                    .black87), // Light input text in dark mode
-                        hintStyle: TextStyle(
-                            fontSize: 16,
-                            color: isDarkMode
-                                ? Colors.grey[400]
-                                : Colors.grey[
-                                    600]), // Lighter hint text in dark mode
-                        borderColor: isDarkMode
-                            ? Colors.grey[700]
-                            : Colors.grey[400], // Darker border in dark mode
-                        focusedBorderColor: AppPallete.gradient2,
                       ),
                       const SizedBox(height: 20),
                       AuthField(
@@ -139,22 +105,6 @@ class _LoginPageState extends State<LoginPage> {
                         controller: passwordController,
                         isObscureText: true,
                         prefixIcon: Icons.lock_outline,
-                        style: TextStyle(
-                            fontSize: 16,
-                            color: isDarkMode
-                                ? Colors.white
-                                : Colors
-                                    .black87), // Light input text in dark mode
-                        hintStyle: TextStyle(
-                            fontSize: 16,
-                            color: isDarkMode
-                                ? Colors.grey[400]
-                                : Colors.grey[
-                                    600]), // Lighter hint text in dark mode
-                        borderColor: isDarkMode
-                            ? Colors.grey[700]
-                            : Colors.grey[400], // Darker border in dark mode
-                        focusedBorderColor: AppPallete.gradient2,
                       ),
                       const SizedBox(height: 30),
                       AuthGradientButton(
@@ -175,20 +125,16 @@ class _LoginPageState extends State<LoginPage> {
                             textAlign: TextAlign.center,
                             text: TextSpan(
                               text: "没有账号？",
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  color: isDarkMode
-                                      ? Colors.grey[400]
-                                      : Colors.grey[
-                                          700]), // Lighter "No account?" text in dark mode
+                              style: Theme.of(context).textTheme.titleMedium,
                               children: [
                                 TextSpan(
                                   text: '注册',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppPallete.gradient2,
-                                  ),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium!
+                                      .copyWith(
+                                          color: AppPallete.gradient2,
+                                          fontWeight: FontWeight.bold),
                                 ),
                               ],
                             ),

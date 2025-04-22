@@ -1,3 +1,4 @@
+import 'package:belog/core/common/widgets/theme_toggle_button.dart';
 import 'package:belog/features/user/presentation/pages/about_page.dart';
 import 'package:belog/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:belog/core/utils/show_snackbar.dart';
@@ -25,7 +26,19 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('个人中心'),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            SizedBox(
+              width: 55,
+            ),
+            const Text('个人中心'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [ThemeToggleButton()],
+            )
+          ],
+        ),
       ),
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {

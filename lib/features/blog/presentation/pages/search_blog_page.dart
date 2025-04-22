@@ -35,7 +35,7 @@ class _SearchBlogPageState extends State<SearchBlogPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 100,
+        toolbarHeight: 125,
         title: Column(
           children: [
             Row(
@@ -52,7 +52,7 @@ class _SearchBlogPageState extends State<SearchBlogPage> {
               ],
             ),
             SizedBox(
-              height: 14,
+              height: 20,
             ),
             Container(
               decoration: BoxDecoration(
@@ -68,11 +68,14 @@ class _SearchBlogPageState extends State<SearchBlogPage> {
                   hintStyle:
                       TextStyle(color: AppPallete.whiteColor.withAlpha(70)),
                   contentPadding: EdgeInsets.symmetric(horizontal: 16),
-                  prefixIcon: Icon(Icons.search,
-                      color: AppPallete.whiteColor.withAlpha(70)),
+                  prefixIcon: Icon(
+                    Icons.search,
+                  ),
                   suffixIcon: _searchController.text.isNotEmpty
                       ? IconButton(
-                          icon: Icon(Icons.clear, color: AppPallete.whiteColor),
+                          icon: Icon(
+                            Icons.clear,
+                          ),
                           onPressed: () {
                             setState(() {
                               _searchController.clear();
@@ -82,7 +85,6 @@ class _SearchBlogPageState extends State<SearchBlogPage> {
                         )
                       : null,
                 ),
-                style: TextStyle(color: AppPallete.whiteColor),
                 autofocus: false,
               ),
             ),
@@ -94,11 +96,11 @@ class _SearchBlogPageState extends State<SearchBlogPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.search, size: 64, color: AppPallete.greyColor),
+                  Icon(Icons.search, size: 64),
                   SizedBox(height: 16),
                   Text(
                     '查找文章...',
-                    style: TextStyle(fontSize: 18, color: AppPallete.greyColor),
+                    style: TextStyle(fontSize: 18),
                   ),
                 ],
               ),
@@ -115,12 +117,28 @@ class _SearchBlogPageState extends State<SearchBlogPage> {
                     }
                   },
                   builder: (context, state) {
-                    return Center(
-                      child: Text(
-                        '加载中...',
-                        style: TextStyle(
-                            fontSize: 18, color: AppPallete.greyColor),
-                      ),
+                    return BlocBuilder<BlogSearchBloc, BlogSearchState>(
+                      builder: (context, state) {
+                        if (state is BlogSearchFailure ||
+                            (state is BlogSearchSuccess &&
+                                _searchResults.isEmpty)) {
+                          return Center(
+                            child: Text(
+                              '暂时没有相关结果',
+                              style: TextStyle(fontSize: 18),
+                            ),
+                          );
+                        }
+
+                        return Center(
+                          child: Text(
+                            '加载中...',
+                            style: TextStyle(
+                              fontSize: 18,
+                            ),
+                          ),
+                        );
+                      },
                     );
                   },
                 )

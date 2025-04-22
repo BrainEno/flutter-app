@@ -43,6 +43,6 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: build/ios/iphoneos/IpaExport.ipa
-          tag: v1.6
+          tag: v1.7
           overwrite: true
-          body: "Release v1.6, fixed profile info display error and added edit account page"
+          body: "Release v1.7, added theme toggle button."

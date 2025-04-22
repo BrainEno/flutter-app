@@ -53,6 +53,7 @@ class _EditAccountPageState extends State<EditAccountPage> {
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
+                    autofocus: false,
                     controller: emailController,
                     decoration: InputDecoration(
                       hintText: '输入新邮箱',
@@ -126,6 +127,7 @@ class _EditAccountPageState extends State<EditAccountPage> {
                   ),
                   const SizedBox(height: 20), // Consistent spacing
                   TextFormField(
+                    autofocus: false,
                     controller: passwordController,
                     obscureText: true,
                     decoration: InputDecoration(

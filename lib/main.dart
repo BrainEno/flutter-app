@@ -3,6 +3,7 @@ import 'package:belog/core/common/entities/destination.dart';
 import 'package:belog/core/common/widgets/destination_view.dart';
 import 'package:belog/core/theme/app_pallete.dart';
 import 'package:belog/core/theme/theme.dart';
+import 'package:belog/core/theme/theme_bloc.dart';
 import 'package:belog/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:belog/features/blog/presentation/blocs/blog_by/bloc/blog_by_bloc.dart';
 import 'package:belog/features/blog/presentation/blocs/blog_liked/blog_liked_bloc.dart';
@@ -11,7 +12,6 @@ import 'package:belog/features/blog/presentation/blocs/blog_search/bloc/blog_sea
 import 'package:belog/features/blog/presentation/blocs/bog_upload/bloc/blog_upload_bloc.dart';
 import 'package:belog/features/user/bloc/user_edit_bloc.dart';
 import 'package:belog/features/user/bloc/edit_account_bloc.dart';
-
 import 'package:belog/init_dependencies.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,6 +22,7 @@ void main() async {
   await initDependencies();
   runApp(MultiBlocProvider(
     providers: [
+      BlocProvider(create: (_) => serviceLocator<ThemeBloc>()),
       BlocProvider(create: (_) => serviceLocator<AuthBloc>()),
       BlocProvider(create: (_) => serviceLocator<AppUserCubit>()),
       BlocProvider(create: (_) => serviceLocator<BlogBloc>()),
@@ -43,16 +44,9 @@ class Home extends StatefulWidget {
   State<Home> createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> with TickerProviderStateMixin<Home> {
-  static const List<Destination> allDestinations = <Destination>[
-    Destination(0, '首页', Icons.home, AppPallete.whiteColor),
-    Destination(1, '搜索', Icons.search, AppPallete.whiteColor),
-    Destination(2, '收藏', Icons.bookmark, AppPallete.whiteColor),
-    Destination(3, '个人中心', Icons.person, AppPallete.whiteColor),
-  ];
-
+class _HomeState extends State<Home> with TickerProviderStateMixin {
+  late final List<Destination> allDestinations;
   late final List<GlobalKey<NavigatorState>> navigatorKeys;
-  late final List<GlobalKey> desinationkeys;
   late final List<AnimationController> destinationFaders;
   late final List<Widget> destinationViews;
   int selectedIndex = 0;
@@ -72,24 +66,36 @@ class _HomeState extends State<Home> with TickerProviderStateMixin<Home> {
   void initState() {
     super.initState();
 
+    // Initialize allDestinations here to avoid late initialization error
+    allDestinations = [
+      Destination(0, '首页', Icons.home),
+      Destination(1, '搜索', Icons.search),
+      Destination(2, '收藏', Icons.bookmark),
+      Destination(3, '个人中心', Icons.person),
+    ];
+
+    // Initialize navigatorKeys
     navigatorKeys = List<GlobalKey<NavigatorState>>.generate(
       allDestinations.length,
       (int index) => GlobalKey(),
     ).toList();
 
+    // Initialize destinationFaders
     destinationFaders = List<AnimationController>.generate(
       allDestinations.length,
       (int index) => buildFaderController(),
     ).toList();
     destinationFaders[selectedIndex].value = 1.0;
 
+    // Initialize destinationViews
     final CurveTween tween = CurveTween(curve: Curves.fastOutSlowIn);
     destinationViews = allDestinations.map<Widget>((Destination destination) {
       return FadeTransition(
         opacity: destinationFaders[destination.index].drive(tween),
         child: DestinationView(
-            destination: destination,
-            navigatorKey: navigatorKeys[destination.index]),
+          destination: destination,
+          navigatorKey: navigatorKeys[destination.index],
+        ),
       );
     }).toList();
   }
@@ -102,59 +108,70 @@ class _HomeState extends State<Home> with TickerProviderStateMixin<Home> {
     super.dispose();
   }
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return NavigatorPopHandler(
-        // ignore: deprecated_member_use
-        onPop: () {
-          final NavigatorState navigator =
-              navigatorKeys[selectedIndex].currentState!;
-          navigator.pop();
-        },
-        child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.darkThemeMode,
-          home: Scaffold(
-            body: SafeArea(
-              top: false,
-              child: Stack(
-                fit: StackFit.expand,
-                children: allDestinations.map((Destination destination) {
-                  final int index = destination.index;
-                  final Widget view = destinationViews[index];
-                  if (index == selectedIndex) {
-                    destinationFaders[index].forward();
-                    return Offstage(offstage: false, child: view);
-                  } else {
-                    destinationFaders[index].reverse();
-                    if (destinationFaders[index].isAnimating) {
-                      return IgnorePointer(child: view);
+      onPop: () {
+        final NavigatorState navigator =
+            navigatorKeys[selectedIndex].currentState!;
+        navigator.pop();
+      },
+      child: BlocBuilder<ThemeBloc, ThemeState>(
+        builder: (context, state) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            themeMode: state.themeMode,
+            theme: AppTheme.lightThemeMode,
+            darkTheme: AppTheme.darkThemeMode,
+            home: Scaffold(
+              body: SafeArea(
+                top: false,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: allDestinations.map((Destination destination) {
+                    final int index = destination.index;
+                    final Widget view = destinationViews[index];
+                    if (index == selectedIndex) {
+                      destinationFaders[index].forward();
+                      return Offstage(offstage: false, child: view);
+                    } else {
+                      destinationFaders[index].reverse();
+                      if (destinationFaders[index].isAnimating) {
+                        return IgnorePointer(child: view);
+                      }
+                      return Offstage(child: view);
                     }
-                    return Offstage(
-                      child: view,
-                    );
-                  }
+                  }).toList(),
+                ),
+              ),
+              bottomNavigationBar: NavigationBar(
+                selectedIndex: selectedIndex,
+                onDestinationSelected: (int index) {
+                  setState(() {
+                    selectedIndex = index;
+                  });
+                },
+                destinations: allDestinations
+                    .map<NavigationDestination>((Destination destination) {
+                  return NavigationDestination(
+                    icon: BlocBuilder<ThemeBloc, ThemeState>(
+                      builder: (context, state) {
+                        return Icon(
+                          destination.icon,
+                          color: state.themeMode == ThemeMode.light
+                              ? AppPallete.greyColorDark
+                              : AppPallete.whiteColor,
+                        );
+                      },
+                    ),
+                    label: destination.title,
+                  );
                 }).toList(),
               ),
             ),
-            bottomNavigationBar: NavigationBar(
-              selectedIndex: selectedIndex,
-              onDestinationSelected: (int index) {
-                setState(() {
-                  selectedIndex = index;
-                });
-              },
-              destinations: allDestinations.map<NavigationDestination>((
-                Destination destination,
-              ) {
-                return NavigationDestination(
-                  icon: Icon(destination.icon, color: destination.color),
-                  label: destination.title,
-                );
-              }).toList(),
-            ),
-          ),
-        ));
+          );
+        },
+      ),
+    );
   }
 }
