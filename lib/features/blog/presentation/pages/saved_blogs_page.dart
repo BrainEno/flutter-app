@@ -50,6 +50,7 @@ class _SavedBlogsPageState extends State<SavedBlogsPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: const Text('我的收藏'),
         elevation: 1.0,
       ),

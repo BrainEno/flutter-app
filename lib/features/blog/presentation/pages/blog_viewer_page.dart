@@ -47,8 +47,10 @@ class _BlogViewerPageState extends State<BlogViewerPage> {
             expandedHeight: 300,
             floating: false,
             pinned: true,
+            centerTitle:true,
             flexibleSpace: FlexibleSpaceBar(
               titlePadding: const EdgeInsets.all(16),
+              centerTitle:true,
               title: Text(
                 widget.blog.title,
                 style: const TextStyle(
